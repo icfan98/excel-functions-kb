@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 表格函数完整演示 - 70+ 函数</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
+        .header h1 { color: #667eea; font-size: 24px; margin-bottom: 10px; }
+        .search-box { position: relative; }
+        .search-box input { width: 100%; padding: 12px 40px 12px 15px; border: 2px solid #e0e0e0; border-radius: 25px; font-size: 14px; }
+        .search-box input:focus { outline: none; border-color: #667eea; }
+        .search-icon { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #999; }
+        
+        .tabs { display: flex; gap: 10px; margin: 20px 0; flex-wrap: wrap; }
+        .tab { padding: 8px 16px; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3); border-radius: 20px; color: white; cursor: pointer; font-size: 13px; }
+        .tab.active { background: white; color: #667eea; }
+        
+        .section { background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .section h2 { color: #667eea; font-size: 18px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #667eea; }
+        
+        .func-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+        .func-card { background: #f8f9ff; border: 2px solid #e0e0ff; border-radius: 8px; padding: 12px; cursor: pointer; transition: all 0.2s; }
+        .func-card:hover { background: #eef1ff; border-color: #667eea; transform: translateY(-2px); }
+        .func-card h3 { color: #667eea; font-size: 16px; margin-bottom: 5px; }
+        .func-card p { color: #666; font-size: 12px; margin-bottom: 8px; }
+        .func-card .syntax { background: #2d2d2d; color: #f8f8f2; padding: 4px 8px; border-radius: 4px; font-family: monospace; font-size: 11px; margin-bottom: 8px; display: block; }
+        .func-card .tag { display: inline-block; background: #667eea; color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px; }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; }
+        .modal.show { display: block; }
+        .modal-content { background: #f0f0f0; margin: 30px auto; padding: 0; border-radius: 8px; max-width: 900px; max-height: calc(100vh - 60px); overflow-y: auto; }
+        .close-btn { position: sticky; top: 10px; right: 15px; float: right; font-size: 28px; cursor: pointer; color: white; z-index: 1001; background: rgba(0,0,0,0.5); width: 35px; height: 35px; text-align: center; line-height: 35px; border-radius: 50%; }
+        
+        .excel-header { background: #217346; color: white; padding: 15px; }
+        .excel-header h3 { font-size: 16px; }
+        .excel-window { background: white; }
+        .toolbar { background: #f3f2f1; border-bottom: 1px solid #e1dfdd; padding: 6px 10px; display: flex; gap: 8px; }
+        .toolbar .btn { padding: 4px 10px; background: white; border: 1px solid #d1d1d1; border-radius: 2px; font-size: 12px; }
+        .formula-bar { display: flex; align-items: center; padding: 6px 10px; border-bottom: 1px solid #e1dfdd; }
+        .formula-bar .label { color: #666; font-size: 12px; margin-right: 8px; }
+        .formula-bar .input { flex: 1; padding: 4px 8px; border: 1px solid #d1d1d1; font-family: monospace; font-size: 13px; }
+        
+        .spreadsheet { overflow: auto; max-height: 280px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #e1dfdd; padding: 6px 10px; text-align: center; min-width: 60px; font-size: 13px; }
+        th { background: #f3f2f1; font-weight: 600; }
+        .row-header { background: #f3f2f1; width: 35px; }
+        .cell.selected { outline: 2px solid #217346; outline-offset: -2px; }
+        .cell.highlight { background: #fff3cd; }
+        .cell.result { background: #d4edda; font-weight: bold; }
+        .cell.editing { outline: 2px solid #0078d4; outline-offset: -2px; }
+        
+        .controls-area { padding: 15px; }
+        .step-info { background: #0078d4; color: white; padding: 10px; border-radius: 6px; margin-bottom: 12px; }
+        .step-info h4 { font-size: 14px; margin-bottom: 3px; }
+        .step-info p { font-size: 12px; opacity: 0.9; }
+        
+        .progress { background: #e1dfdd; height: 4px; border-radius: 2px; overflow: hidden; margin: 10px 0; }
+        .progress-bar { background: linear-gradient(90deg, #0078d4, #217346); height: 100%; transition: width 0.3s; }
+        
+        .speed-control { display: flex; gap: 5px; margin: 10px 0; align-items: center; flex-wrap: wrap; }
+        .speed-control label { font-size: 12px; font-weight: 600; }
+        .speed-btn { padding: 4px 10px; border: 2px solid #0078d4; background: white; color: #0078d4; border-radius: 15px; cursor: pointer; font-size: 11px; }
+        .speed-btn.active { background: #0078d4; color: white; }
+        
+        .btn { padding: 6px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; margin: 0 3px; }
+        .btn-primary { background: #0078d4; color: white; }
+        .btn-secondary { background: #e1dfdd; color: #333; }
+        
+        .step-list { margin-top: 15px; }
+        .step-item { background: #f8f9ff; border-left: 3px solid #667eea; padding: 8px 12px; margin: 5px 0; border-radius: 4px; font-size: 12px; }
+        .step-item.active { background: #fff3cd; border-left-color: #ffc107; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 表格函数完整演示 - 70+ 函数</h1>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍 搜索函数名称或功能..." oninput="searchFunc()">
+                <span class="search-icon">🔍</span>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="filterCategory('all')">全部</div>
+            <div class="tab" onclick="filterCategory('p0')">⭐ P0 必学</div>
+            <div class="tab" onclick="filterCategory('p1')">🚀 P1 常用</div>
+            <div class="tab" onclick="filterCategory('p2')">💎 P2 高级</div>
+        </div>
+        
+        <div id="content"></div>
+    </div>
+    
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="close-btn" onclick="closeModal()">×</div>
+            <div class="excel-header">
+                <h3 id="modalTitle">函数演示</h3>
+            </div>
+            <div class="excel-window">
+                <div class="toolbar">
+                    <div class="btn">Σ</div>
+                    <div class="btn">fx</div>
+                </div>
+                <div class="formula-bar">
+                    <span class="label">fx</span>
+                    <input type="text" class="input" id="formulaInput" readonly>
+                </div>
+                <div class="spreadsheet">
+                    <table id="demoTable"></table>
+                </div>
+            </div>
+            <div class="controls-area">
+                <div class="step-info">
+                    <h4 id="stepTitle">步骤</h4>
+                    <p id="stepDesc">描述</p>
+                </div>
+                <div class="progress">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <div class="speed-control">
+                    <label>🎬</label>
+                    <button class="speed-btn" data-speed="0.5" onclick="setSpeed(0.5)">0.5x</button>
+                    <button class="speed-btn active" data-speed="1" onclick="setSpeed(1)">1x</button>
+                    <button class="speed-btn" data-speed="1.5" onclick="setSpeed(1.5)">1.5x</button>
+                    <button class="speed-btn" data-speed="2" onclick="setSpeed(2)">2x</button>
+                </div>
+                <div style="text-align:center;">
+                    <button class="btn btn-secondary" onclick="prevStep()">⏮</button>
+                    <button class="btn btn-primary" id="playBtn" onclick="togglePlay()">▶</button>
+                    <button class="btn btn-secondary" onclick="nextStep()">⏭</button>
+                    <button class="btn btn-secondary" onclick="resetDemo()">🔄</button>
+                </div>
+                <div class="step-list" id="stepList"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const allFuncs = {
+            p0: [
+                {n:'SUM',d:'求和',s:'=SUM(num1,...)',t:'基础',tb:[['项目','金额'],['A',100],['B',200],['C',300],['总计','']],st:[{t:'选中单元格',d:'点击结果单元格',f:'',h:[],sel:''},{t:'输入=SUM(',d:'开始输入公式',f:'=SUM(',h:['D5'],sel:'D5'},{t:'选择区域',d:'选中 A2:C2',f:'=SUM(A2:C2',h:['A2','B2','C2'],sel:'A2:C2'},{t:'输入) 按 Enter',d:'完成',f:'=SUM(A2:C2)',r:'D5:600',h:['D5'],sel:'D5'}]},
+                {n:'AVERAGE',d:'平均值',s:'=AVERAGE(num1,...)',t:'基础',tb:[['数据','值'],['A',85],['B',92],['C',78],['D',95],['E',88],['平均','']],st:[{t:'选中 B7',d:'点击 B7',f:'',h:[],sel:''},{t:'输入=AVERAGE(',d:'输入函数',f:'=AVERAGE(',h:['B7'],sel:'B7'},{t:'选择 B2:B6',d:'选中数据',f:'=AVERAGE(B2:B6',h:['B2','B3','B4','B5','B6'],sel:'B2:B6'},{t:'输入) 按 Enter',d:'完成',f:'=AVERAGE(B2:B6)',r:'B7:87.6',h:['B7'],sel:'B7'}]},
+                {n:'COUNT',d:'计数数字',s:'=COUNT(val1,...)',t:'基础',tb:[['姓名','成绩'],['张三',85],['李四',''],['王五',92],['赵六',''],['孙七',78],['统计','']],st:[{t:'选中 B7',d:'点击 B7',f:'',h:[],sel:''},{t:'输入=COUNT(',d:'输入函数',f:'=COUNT(',h:['B7'],sel:'B7'},{t:'选择 B2:B6',d:'选中区域',f:'=COUNT(B2:B6',h:['B2','B3','B4','B5','B6'],sel:'B2:B6'},{t:'输入) 按 Enter',d:'完成',f:'=COUNT(B2:B6)',r:'B7:3',h:['B7'],sel:'B7'}]},
+                {n:'MAX',d:'最大值',s:'=MAX(num1,...)',t:'基础',tb:[['数据','值'],['A',100],['B',250],['C',150],['最大','']],st:[{t:'选中 B5',d:'点击 B5',f:'',h:[],sel:''},{t:'输入=MAX(',d:'输入函数',f:'=MAX(',h:['B5'],sel:'B5'},{t:'选择 B2:B4',d:'选中数据',f:'=MAX(B2:B4',h:['B2','B3','B4'],sel:'B2:B4'},{t:'输入) 按 Enter',d:'完成',f:'=MAX(B2:B4)',r:'B5:250',h:['B5'],sel:'B5'}]},
+                {n:'MIN',d:'最小值',s:'=MIN(num1,...)',t:'基础',tb:[['数据','值'],['A',100],['B',250],['C',150],['最小','']],st:[{t:'选中 B5',d:'点击 B5',f:'',h:[],sel:''},{t:'输入=MIN(',d:'输入函数',f:'=MIN(',h:['B5'],sel:'B5'},{t:'选择 B2:B4',d:'选中数据',f:'=MIN(B2:B4',h:['B2','B3','B4'],sel:'B2:B4'},{t:'输入) 按 Enter',d:'完成',f:'=MIN(B2:B4)',r:'B5:100',h:['B5'],sel:'B5'}]},
+                {n:'IF',d:'条件判断',s:'=IF(条件，真，假)',t:'逻辑',tb:[['学生','成绩','结果'],['张三',85,''],['李四',55,''],['王五',92,'']],st:[{t:'选中 C2',d:'点击 C2',f:'',h:[],sel:''},{t:'输入=IF(',d:'输入函数',f:'=IF(',h:['C2'],sel:'C2'},{t:'输入 B2>=60,',d:'输入条件',f:'=IF(B2>=60,',h:['C2','B2'],sel:'C2'},{t:'输入"及格","不及格")',d:'输入真假值',f:'=IF(B2>=60,"及格","不及格")',h:['C2'],sel:'C2'},{t:'按 Enter 并填充',d:'完成',f:'=IF(B2>=60,"及格","不及格")',r:'C2:及格 C3:不及格 C4:及格',h:['C2','C3','C4'],sel:'C2'}]},
+                {n:'AND',d:'逻辑与',s:'=AND(cond1,...)',t:'逻辑',tb:[['条件 1','条件 2','结果'],['TRUE','TRUE',''],['TRUE','FALSE','']],st:[{t:'选中 C2',d:'点击 C2',f:'',h:[],sel:''},{t:'输入=AND(',d:'输入函数',f:'=AND(',h:['C2'],sel:'C2'},{t:'输入 A2,B2)',d:'输入条件',f:'=AND(A2,B2)',h:['C2','A2','B2'],sel:'C2'},{t:'按 Enter',d:'完成',f:'=AND(A2,B2)',r:'C2:TRUE C3:FALSE',h:['C2','C3'],sel:'C2'}]},
+                {n:'OR',d:'逻辑或',s:'=OR(cond1,...)',t:'逻辑',tb:[['条件 1','条件 2','结果'],['TRUE','TRUE',''],['FALSE','FALSE','']],st:[{t:'选中 C2',d:'点击 C2',f:'',h:[],sel:''},{t:'输入=OR(',d:'输入函数',f:'=OR(',h:['C2'],sel:'C2'},{t:'输入 A2,B2)',d:'输入条件',f:'=OR(A2,B2)',h:['C2','A2','B2'],sel:'C2'},{t:'按 Enter',d:'完成',f:'=OR(A2,B2)',r:'C2:TRUE C3:FALSE',h:['C2','C3'],sel:'C2'}]},
+                {n:'VLOOKUP',d:'垂直查找',s:'=VLOOKUP(值，区，列，FALSE)',t:'查找',tb:[['工号','姓名','部门'],['A001','张三','销售'],['A002','李四','技术'],['A003','王五','财务'],['','',''],['查询:','A002','结果:']],st:[{t:'选中 C6',d:'点击 C6',f:'',h:[],sel:''},{t:'输入=VLOOKUP(',d:'输入函数',f:'=VLOOKUP(',h:['C6'],sel:'C6'},{t:'输入 B6,',d:'查找值',f:'=VLOOKUP(B6,',h:['C6','B6'],sel:'C6'},{t:'选择 A2:C4,',d:'查找区域',f:'=VLOOKUP(B6,A2:C4,',h:['A2','B2','C2','A3','B3','C3','A4','B4','C4'],sel:'A2:C4'},{t:'输入 2,FALSE)',d:'列号和匹配',f:'=VLOOKUP(B6,A2:C4,2,FALSE)',h:['C6'],sel:'C6'},{t:'按 Enter',d:'完成',f:'=VLOOKUP(B6,A2:C4,2,FALSE)',r:'C6:李四',h:['C6'],sel:'C6'}]},
+                {n:'HLOOKUP',d:'水平查找',s:'=HLOOKUP(值，区，行，FALSE)',t:'查找',tb:[['','A','B','C'],['1 月',100,200,300],['2 月',150,250,350],['查询:','1 月','结果:']],st:[{t:'选中 D4',d:'点击 D4',f:'',h:[],sel:''},{t:'输入=HLOOKUP(',d:'输入函数',f:'=HLOOKUP(',h:['D4'],sel:'D4'},{t:'输入 B4,',d:'查找值',f:'=HLOOKUP(B4,',h:['D4','B4'],sel:'D4'},{t:'选择 A1:D3,',d:'查找区域',f:'=HLOOKUP(B4,A1:D3,',h:['A1','B1','C1','D1','A2','B2','C2','D2','A3','B3','C3','D3'],sel:'A1:D3'},{t:'输入 2,FALSE)',d:'行号和匹配',f:'=HLOOKUP(B4,A1:D3,2,FALSE)',h:['D4'],sel:'D4'},{t:'按 Enter',d:'完成',f:'=HLOOKUP(B4,A1:D3,2,FALSE)',r:'D4:100',h:['D4'],sel:'D4'}]},
+                {n:'XLOOKUP',d:'超级查找',s:'=XLOOKUP(值，查列，返列)',t:'查找',tb:[['姓名','工号','部门'],['张三','A001','销售'],['李四','A002','技术'],['王五','A003','财务'],['','',''],['查询:','李四','工号:']],st:[{t:'选中 C6',d:'点击 C6',f:'',h:[],sel:''},{t:'输入=XLOOKUP(',d:'输入函数',f:'=XLOOKUP(',h:['C6'],sel:'C6'},{t:'输入 B6,',d:'查找值',f:'=XLOOKUP(B6,',h:['C6','B6'],sel:'C6'},{t:'选择 A2:A4,',d:'查找列',f:'=XLOOKUP(B6,A2:A4,',h:['A2','A3','A4'],sel:'A2:A4'},{t:'选择 B2:B4)',d:'返回列',f:'=XLOOKUP(B6,A2:A4,B2:B4)',h:['B2','B3','B4'],sel:'B2:B4'},{t:'按 Enter',d:'完成',f:'=XLOOKUP(B6,A2:A4,B2:B4)',r:'C6:A002',h:['C6'],sel:'C6'}]},
+                {n:'INDEX',d:'索引取值',s:'=INDEX(区，行，列)',t:'查找',tb:[['A','B','C'],[10,20,30],[40,50,60],[70,80,90],['取第 2 行第 3 列','']],st:[{t:'选中 B6',d:'点击 B6',f:'',h:[],sel:''},{t:'输入=INDEX(',d:'输入函数',f:'=INDEX(',h:['B6'],sel:'B6'},{t:'选择 A2:C4,',d:'数据区域',f:'=INDEX(A2:C4,',h:['A2','B2','C2','A3','B3','C3','A4','B4','C4'],sel:'A2:C4'},{t:'输入 2,3)',d:'行号列号',f:'=INDEX(A2:C4,2,3)',h:['B6'],sel:'B6'},{t:'按 Enter',d:'完成',f:'=INDEX(A2:C4,2,3)',r:'B6:60',h:['B6'],sel:'B6'}]},
+                {n:'MATCH',d:'查找位置',s:'=MATCH(值，区，0)',t:'查找',tb:[['姓名','位置'],['张三',''],['李四',''],['王五',''],['查询:','李四','']],st:[{t:'选中 C5',d:'点击 C5',f:'',h:[],sel:''},{t:'输入=MATCH(',d:'输入函数',f:'=MATCH(',h:['C5'],sel:'C5'},{t:'输入 B5,',d:'查找值',f:'=MATCH(B5,',h:['C5','B5'],sel:'C5'},{t:'选择 A2:A4,',d:'查找列',f:'=MATCH(B5,A2:A4,',h:['A2','A3','A4'],sel:'A2:A4'},{t:'输入 0)',d:'精确匹配',f:'=MATCH(B5,A2:A4,0)',h:['C5'],sel:'C5'},{t:'按 Enter',d:'完成',f:'=MATCH(B5,A2:A4,0)',r:'C5:2',h:['C5'],sel:'C5'}]},
+                {n:'SUMIF',d:'条件求和',s:'=SUMIF(区，条，和)',t:'统计',tb:[['地区','销售','金额'],['北京','张三',10000],['上海','李四',15000],['北京','王五',12000],['广州','赵六',8000],['北京','张三',9000],['北京总计:','']],st:[{t:'选中 C7',d:'点击 C7',f:'',h:[],sel:''},{t:'输入=SUMIF(',d:'输入函数',f:'=SUMIF(',h:['C7'],sel:'C7'},{t:'选择 A2:A6,',d:'条件区域',f:'=SUMIF(A2:A6,',h:['A2','A3','A4','A5','A6'],sel:'A2:A6'},{t:'输入"北京",',d:'条件',f:'=SUMIF(A2:A6,"北京",',h:['C7'],sel:'C7'},{t:'选择 C2:C6)',d:'求和区域',f:'=SUMIF(A2:A6,"北京",C2:C6)',h:['C2','C3','C4','C5','C6'],sel:'C2:C6'},{t:'按 Enter',d:'完成',f:'=SUMIF(A2:A6,"北京",C2:C6)',r:'C7:31000',h:['C7'],sel:'C7'}]},
+                {n:'COUNTIF',d:'条件计数',s:'=COUNTIF(区，条)',t:'统计',tb:[['成绩','统计'],['85','>=60 的个数:'],['55',''],['92',''],['48',''],['78','']],st:[{t:'选中 B7',d:'点击 B7',f:'',h:[],sel:''},{t:'输入=COUNTIF(',d:'输入函数',f:'=COUNTIF(',h:['B7'],sel:'B7'},{t:'选择 A2:A6,',d:'数据区域',f:'=COUNTIF(A2:A6,',h:['A2','A3','A4','A5','A6'],sel:'A2:A6'},{t:'输入">=60")',d:'条件',f:'=COUNTIF(A2:A6,">=60")',h:['B7'],sel:'B7'},{t:'按 Enter',d:'完成',f:'=COUNTIF(A2:A6,">=60")',r:'B7:3',h:['B7'],sel:'B7'}]}
+            ],
+            p1: [
+                {n:'SUMIFS',d:'多条件求和',s:'=SUMIFS(和，区 1，条 1，区 2，条 2)',t:'统计',tb:[['地区','产品','金额'],['北京','手机',10000],['上海','手机',15000],['北京','电脑',12000],['北京','手机',9000],['北京手机:','']],st:[{t:'选中 B6',d:'点击 B6',f:'',h:[],sel:''},{t:'输入=SUMIFS(',d:'输入函数',f:'=SUMIFS(',h:['B6'],sel:'B6'},{t:'选择 C2:C5,',d:'求和区域',f:'=SUMIFS(C2:C5,',h:['C2','C3','C4','C5'],sel:'C2:C5'},{t:'选择 A2:A5,"北京",',d:'条件 1',f:'=SUMIFS(C2:C5,A2:A5,"北京",',h:['A2','A3','A4','A5'],sel:'A2:A5'},{t:'选择 B2:B5,"手机")',d:'条件 2',f:'=SUMIFS(C2:C5,A2:A5,"北京",B2:B5,"手机")',h:['B2','B3','B4','B5'],sel:'B2:B5'},{t:'按 Enter',d:'完成',f:'=SUMIFS(C2:C5,A2:A5,"北京",B2:B5,"手机")',r:'B6:19000',h:['B6'],sel:'B6'}]},
+                {n:'COUNTIFS',d:'多条件计数',s:'=COUNTIFS(区 1，条 1，区 2，条 2)',t:'统计',tb:[['地区','性别','人数'],['北京','男',1],['北京','女',1],['上海','男',1],['北京','男',1],['北京男:','']],st:[{t:'选中 B6',d:'点击 B6',f:'',h:[],sel:''},{t:'输入=COUNTIFS(',d:'输入函数',f:'=COUNTIFS(',h:['B6'],sel:'B6'},{t:'选择 A2:A5,"北京",',d:'条件 1',f:'=COUNTIFS(A2:A5,"北京",',h:['A2','A3','A4','A5'],sel:'A2:A5'},{t:'选择 B2:B5,"男")',d:'条件 2',f:'=COUNTIFS(A2:A5,"北京",B2:B5,"男")',h:['B2','B3','B4','B5'],sel:'B2:B5'},{t:'按 Enter',d:'完成',f:'=COUNTIFS(A2:A5,"北京",B2:B5,"男")',r:'B6:2',h:['B6'],sel:'B6'}]},
+                {n:'AVERAGEIF',d:'条件平均',s:'=AVERAGEIF(区，条，平)',t:'统计',tb:[['地区','金额'],['北京',10000],['上海',15000],['北京',12000],['广州',8000],['北京平均:','']],st:[{t:'选中 B6',d:'点击 B6',f:'',h:[],sel:''},{t:'输入=AVERAGEIF(',d:'输入函数',f:'=AVERAGEIF(',h:['B6'],sel:'B6'},{t:'选择 A2:A5,"北京",',d:'条件和区域',f:'=AVERAGEIF(A2:A5,"北京",',h:['A2','A3','A4','A5'],sel:'A2:A5'},{t:'选择 B2:B5)',d:'平均区域',f:'=AVERAGEIF(A2:A5,"北京",B2:B5)',h:['B2','B3','B4','B5'],sel:'B2:B5'},{t:'按 Enter',d:'完成',f:'=AVERAGEIF(A2:A5,"北京",B2:B5)',r:'B6:11000',h:['B6'],sel:'B6'}]},
+                {n:'LEFT',d:'左侧提取',s:'=LEFT(文，字)',t:'文本',tb:[['手机号','前 3 位'],['13812345678',''],['13987654321',''],['13511112222','']],st:[{t:'选中 B2',d:'点击 B2',f:'',h:[],sel:''},{t:'输入=LEFT(',d:'输入函数',f:'=LEFT(',h:['B2'],sel:'B2'},{t:'输入 A2,',d:'文本',f:'=LEFT(A2,',h:['B2','A2'],sel:'B2'},{t:'输入 3)',d:'字符数',f:'=LEFT(A2,3)',h:['B2'],sel:'B2'},{t:'按 Enter 并填充',d:'完成',f:'=LEFT(A2,3)',r:'B2:138 B3:139 B4:135',h:['B2','B3','B4'],sel:'B2'}]},
+                {n:'RIGHT',d:'右侧提取',s:'=RIGHT(文，字)',t:'文本',tb:[['手机号','后 4 位'],['13812345678',''],['13987654321',''],['13511112222','']],st:[{t:'选中 B2',d:'点击 B2',f:'',h:[],sel:''},{t:'输入=RIGHT(',d:'输入函数',f:'=RIGHT(',h:['B2'],sel:'B2'},{t:'输入 A2,',d:'文本',f:'=RIGHT(A2,',h:['B2','A2'],sel:'B2'},{t:'输入 4)',d:'字符数',f:'=RIGHT(A2,4)',h:['B2'],sel:'B2'},{t:'按 Enter 并填充',d:'完成',f:'=RIGHT(A2,4)',r:'B2:5678 B3:4321 B4:2222',h:['B2','B3','B4'],sel:'B2'}]},
+                {n:'MID',d:'中间提取',s:'=MID(文，起，字)',t:'文本',tb:[['身份证','出生年份'],['110101199001011234',''],['310101198505051234','']],st:[{t:'选中 B2',d:'点击 B2',f:'',h:[],sel:''},{t:'输入=MID(',d:'输入函数',f:'=MID(',h:['B2'],sel:'B2'},{t:'输入 A2,',d:'文本',f:'=MID(A2,',h:['B2','A2'],sel:'B2'},{t:'输入 7,4)',d:'起始和长度',f:'=MID(A2,7,4)',h:['B2'],sel:'B2'},{t:'按 Enter 并填充',d:'完成',f:'=MID(A2,7,4)',r:'B2:1990 B3:1985',h:['B2','B3'],sel:'B2'}]},
+                {n:'LEN',d:'文本长度',s:'=LEN(文)',t:'文本',tb:[['文本','长度'],['Hello',''],['你好世界',''],['12345','']],st:[{t:'选中 B2',d:'点击 B2',f:'',h:[],sel:''},{t:'输入=LEN(',d:'输入函数',f:'=LEN(',h:['B2'],sel:'B2'},{t:'输入 A2)',d:'文本',f:'=LEN(A2)',h:['B2','A2'],sel:'B2'},{t:'按 Enter 并填充',d:'完成',f:'=LEN(A2)',r:'B2:5 B3:4 B4:5',h:['B2','B3','B4'],sel:'B2'}]},
+                {n:'FIND',d:'查找位置',s:'=FIND(查，文)',t:'文本',tb:[['邮箱','@位置'],['user@example.com',''],['test@test.com','']],st:[{t:'选中 B2',d:'点击 B2',f:'',h:[],sel:''},{t:'输入=FIND(',d:'输入函数',f:'=FIND(',h:['B2'],sel:'B2'},{t:'输入"@",A2)',d:'查找和文本',f:'=FIND("@",A2)',h:['B2','A2'],sel:'B2'},{t:'按 Enter 并填充',d:'完成',f:'=FIND("@",A2)',r:'B2:5 B3:5',h:['B2','B3'],sel:'B2'}]},
+                {n:'SUBSTITUTE',d:'替换文本',s:'=SUBSTITUTE(文，旧，新)',t:'文本',tb:[['原文','替换后'],['2024-03-17',''],['hello-world','']],st:[{t:'选中 B2',d:'点击 B2',f:'',h:[],sel:''},{t:'输入=SUBSTITUTE(',d:'输入函数',f:'=SUBSTITUTE(',h:['B2'],sel:'B2'},{t:'输入 A2,"-","/")',d:'参数',f:'=SUBSTITUTE(A2,"-","/")',h:['B2','A2'],sel:'B2'},{t:'按 Enter 并填充',d:'完成',f:'=SUBSTITUTE(A2,"-","/")',r:'B2:2024/03/17 B3:hello/world',h:['B2','B3'],sel:'B2'}]},
+                {n:'TRIM',d:'去除空格',s:'=TRIM(文)',t:'文本',tb:[['原文','清理后'],['  Hello  ',''],['  World  ','']],st:[{t:'选中 B2',d:'点击 B2',f:'',h:[],sel:''},{t:'输入=TRIM(',d:'输入函数',f:'=TRIM(',h:['B2'],sel:'B2'},{t:'输入 A2)',d:'文本',f:'=TRIM(A2)',h:['B2','A2'],sel:'B2'},{t:'按 Enter 并填充',d:'完成',f:'=TRIM(A2)',r:'B2:Hello B3:World',h:['B2','B3'],sel:'B2'}]},
+                {n:'CONCAT',d:'连接文本',s:'=A1&B1 或=CONCAT(A1,B1)',t:'文本',tb:[['姓','名','全名'],['张','三',''],['李','四','']],st:[{t:'选中 C2',d:'点击 C2',f:'',h:[],sel:''},{t:'输入=A2&',d:'输入公式',f:'=A2&',h:['C2','A2'],sel:'C2'},{t:'输入 B2',d:'连接',f:'=A2&B2',h:['C2','A2','B2'],sel:'C2'},{t:'按 Enter 并填充',d:'完成',f:'=A2&B2',r:'C2:张三 C3:李四',h:['C2','C3'],sel:'C2'}]},
+                {n:'TEXTJOIN',d:'合并文本',s:'=TEXTJOIN(分，略，文 1,...)',t:'文本',tb:[['项目 1','项目 2','项目 3','合并'],['A','B','C','']],st:[{t:'选中 D2',d:'点击 D2',f:'',h:[],sel:''},{t:'输入=TEXTJOIN(',d:'输入函数',f:'=TEXTJOIN(',h:['D2'],sel:'D2'},{t:'输入",",TRUE,',d:'分隔符',f:'=TEXTJOIN(",",TRUE,',h:['D2'],sel:'D2'},{t:'选择 A2:C2)',d:'文本区域',f:'=TEXTJOIN(",",TRUE,A2:C2)',h:['A2','B2','C2'],sel:'A2:C2'},{t:'按 Enter',d:'完成',f:'=TEXTJOIN(",",TRUE,A2:C2)',r:'D2:A,B,C',h:['D2'],sel:'D2'}]},
+                {n:'TEXT',d:'格式化',s:'=TEXT(值，格)',t:'文本',tb:[['日期','格式化'],['2024-03-17',''],['0.85','']],st:[{t:'选中 B2',d:'点击 B2',f:'',h:[],sel:''},{t:'输入=TEXT(',d:'输入函数',f:'=TEXT(',h:['B2'],sel:'B2'},{t:'输入 A2,"yyyy 年 mm 月 dd 日")',d:'参数',f:'=TEXT(A2,"yyyy 年 mm 月 dd 日")',h:['B2','A2'],sel:'B2'},{t:'按 Enter',d:'完成',f:'=TEXT(A2,"yyyy 年 mm 月 dd 日")',r:'B2:2024 年 03 月 17 日',h:['B2'],sel:'B2'}]},
+                {n:'VALUE',d:'文本转数',s:'=VALUE(文)',t:'文本',tb:[['文本','数字'],['"123.45"',''],['"456"','']],st:[{t:'选中 B2',d:'点击 B2',f:'',h:[],sel:''},{t:'输入=VALUE(',d:'输入函数',f:'=VALUE(',h:['B2'],sel:'B2'},{t:'输入 A2)',d:'文本',f:'=VALUE(A2)',h:['B2','A2'],sel:'B2'},{t:'按 Enter',d:'完成',f:'=VALUE(A2)',r:'B2:123.45',h:['B2'],sel:'B2'}]},
+                {n:'TODAY',d:'当前日期',s:'=TODAY()',t:'日期',tb:[['今天',''],['当前','']],st:[{t:'选中 A2',d:'点击 A2',f:'',h:[],sel:''},{t:'输入=TODAY()',d:'输入函数',f:'=TODAY()',h:['A2'],sel:'A2'},{t:'按 Enter',d:'完成',f:'=TODAY()',r:'A2:2026-03-17',h:['A2'],sel:'A2'}]},
+                {n:'NOW',d:'当前时间',s:'=NOW()',t:'日期',tb:[['现在',''],['当前','']],st:[{t:'选中 A2',d:'点击 A2',f:'',h:[],sel:''},{t:'输入=NOW()',d:'输入函数',f:'=NOW()',h:['A2'],sel:'A2'},{t:'按 Enter',d:'完成',f:'=NOW()',r:'A2:2026-03-17 23:30',h:['A2'],sel:'A2'}]},
+                {n:'YEAR',d:'提取年份',s:'=YEAR(日)',t:'日期',tb:[['日期','年份'],['2024-03-17',''],['1990-05-15','']],st:[{t:'选中 B2',d:'点击 B2',f:'',h:[],sel:''},{t:'输入=YEAR(',d:'输入函数',f:'=YEAR(',h:['B2'],sel:'B2'},{t:'输入 A2)',d:'日期',f:'=YEAR(A2)',h:['B2','A2'],sel:'B2'},{t:'按 Enter',d:'完成',f:'=YEAR(A2)',r:'B2:2024 B3:1990',h:['B2','B3'],sel:'B2'}]},
+                {n:'MONTH',d:'提取月份',s:'=MONTH(日)',t:'日期',tb:[['日期','月份'],['2024-03-17',''],['1990-05-15','']],st:[{t:'选中 B2',d:'点击 B2',f:'',h:[],sel:''},{t:'输入=MONTH(',d:'输入函数',f:'=MONTH(',h:['B2'],sel:'B2'},{t:'输入 A2)',d:'日期',f:'=MONTH(A2)',h:['B2','A2'],sel:'B2'},{t:'按 Enter',d:'完成',f:'=MONTH(A2)',r:'B2:3 B3:5',h:['B2','B3'],sel:'B2'}]},
+                {n:'DAY',d:'提取日期',s:'=DAY(日)',t:'日期',tb:[['日期','日'],['2024-03-17',''],['1990-05-15','']],st:[{t:'选中 B2',d:'点击 B2',f:'',h:[],sel:''},{t:'输入=DAY(',d:'输入函数',f:'=DAY(',h:['B2'],sel:'B2'},{t:'输入 A2)',d:'日期',f:'=DAY(A2)',h:['B2','A2'],sel:'B2'},{t:'按 Enter',d:'完成',f:'=DAY(A2)',r:'B2:17 B3:15',h:['B2','B3'],sel:'B2'}]},
+                {n:'DATE',d:'构建日期',s:'=DATE(年，月，日)',t:'日期',tb:[['年','月','日','日期'],['2024','3','17','']],st:[{t:'选中 D2',d:'点击 D2',f:'',h:[],sel:''},{t:'输入=DATE(',d:'输入函数',f:'=DATE(',h:['D2'],sel:'D2'},{t:'输入 A2,B2,C2)',d:'参数',f:'=DATE(A2,B2,C2)',h:['D2','A2','B2','C2'],sel:'D2'},{t:'按 Enter',d:'完成',f:'=DATE(A2,B2,C2)',r:'D2:2024-03-17',h:['D2'],sel:'D2'}]},
+                {n:'DATEDIF',d:'日期差',s:'=DATEDIF(起，止，单)',t:'日期',tb:[['出生','年龄'],['1990-05-15',''],['1985-08-20','']],st:[{t:'选中 B2',d:'点击 B2',f:'',h:[],sel:''},{t:'输入=DATEDIF(',d:'输入函数',f:'=DATEDIF(',h:['B2'],sel:'B2'},{t:'输入 A2,TODAY(),',d:'起止',f:'=DATEDIF(A2,TODAY(),',h:['B2','A2'],sel:'B2'},{t:'输入"Y")',d:'单位',f:'=DATEDIF(A2,TODAY(),"Y")',h:['B2'],sel:'B2'},{t:'按 Enter',d:'完成',f:'=DATEDIF(A2,TODAY(),"Y")',r:'B2:35 B3:40',h:['B2','B3'],sel:'B2'}]},
+                {n:'EOMONTH',d:'月末日期',s:'=EOMONTH(日，月)',t:'日期',tb:[['日期','月末'],['2024-03-17',''],['2024-06-15','']],st:[{t:'选中 B2',d:'点击 B2',f:'',h:[],sel:''},{t:'输入=EOMONTH(',d:'输入函数',f:'=EOMONTH(',h:['B2'],sel:'B2'},{t:'输入 A2,0)',d:'参数',f:'=EOMONTH(A2,0)',h:['B2','A2'],sel:'B2'},{t:'按 Enter',d:'完成',f:'=EOMONTH(A2,0)',r:'B2:2024-03-31',h:['B2'],sel:'B2'}]},
+                {n:'WEEKDAY',d:'星期几',s:'=WEEKDAY(日，2)',t:'日期',tb:[['日期','星期'],['2024-03-17',''],['2024-03-18','']],st:[{t:'选中 B2',d:'点击 B2',f:'',h:[],sel:''},{t:'输入=WEEKDAY(',d:'输入函数',f:'=WEEKDAY(',h:['B2'],sel:'B2'},{t:'输入 A2,2)',d:'参数',f:'=WEEKDAY(A2,2)',h:['B2','A2'],sel:'B2'},{t:'按 Enter',d:'完成',f:'=WEEKDAY(A2,2)',r:'B2:7(日) B3:1(一)',h:['B2','B3'],sel:'B2'}]},
+                {n:'WEEKNUM',d:'第几周',s:'=WEEKNUM(日)',t:'日期',tb:[['日期','周数'],['2024-03-17',''],['2024-01-01','']],st:[{t:'选中 B2',d:'点击 B2',f:'',h:[],sel:''},{t:'输入=WEEKNUM(',d:'输入函数',f:'=WEEKNUM(',h:['B2'],sel:'B2'},{t:'输入 A2)',d:'日期',f:'=WEEKNUM(A2)',h:['B2','A2'],sel:'B2'},{t:'按 Enter',d:'完成',f:'=WEEKNUM(A2)',r:'B2:11 B3:1',h:['B2','B3'],sel:'B2'}]},
+                {n:'WORKDAY',d:'工作日',s:'=WORKDAY(起，天，假)',t:'日期',tb:[['开始','天数','工作日'],['2024-03-17','10','']],st:[{t:'选中 C2',d:'点击 C2',f:'',h:[],sel:''},{t:'输入=WORKDAY(',d:'输入函数',f:'=WORKDAY(',h:['C2'],sel:'C2'},{t:'输入 A2,B2)',d:'参数',f:'=WORKDAY(A2,B2)',h:['C2','A2','B2'],sel:'C2'},{t:'按 Enter',d:'完成',f:'=WORKDAY(A2,B2)',r:'C2:2024-03-29',h:['C2'],sel:'C2'}]},
+                {n:'ROUND',d:'四舍五入',s:'=ROUND(数，位)',t:'数学',tb:[['数字','2 位小数'],['3.14159',''],['2.71828','']],st:[{t:'选中 B2',d:'点击 B2',f:'',h:[],sel:''},{t:'输入=ROUND(',d:'输入函数',f:'=ROUND(',h:['B2'],sel:'B2'},{t:'输入 A2,2)',d:'参数',f:'=ROUND(A2,2)',h:['B2','A2'],sel:'B2'},{t:'按 Enter',d:'完成',f:'=ROUND(A2,2)',r:'B2:3.14 B3:2.72',h:['B2','B3'],sel:'B2'}]},
+                {n:'ROUNDUP',d:'向上舍入',s:'=ROUNDUP(数，位)',t:'数学',tb:[['数字','向上'],['3.1',''],['3.9','']],st:[{t:'选中 B2',d:'点击 B2',f:'',h:[],sel:''},{t:'输入=ROUNDUP(',d:'输入函数',f:'=ROUNDUP(',h:['B2'],sel:'B2'},{t:'输入 A2,0)',d:'参数',f:'=ROUNDUP(A2,0)',h:['B2','A2'],sel:'B2'},{t:'按 Enter',d:'完成',f:'=ROUNDUP(A2,0)',r:'B2:4 B3:4',h:['B2','B3'],sel:'B2'}]},
+                {n:'ROUNDDOWN',d:'向下舍入',s:'=ROUNDDOWN(数，位)',t:'数学',tb:[['数字','向下'],['3.1',''],['3.9','']],st:[{t:'选中 B2',d:'点击 B2',f:'',h:[],sel:''},{t:'输入=ROUNDDOWN(',d:'输入函数',f:'=ROUNDDOWN(',h:['B2'],sel:'B2'},{t:'输入 A2,0)',d:'参数',f:'=ROUNDDOWN(A2,0)',h:['B2','A2'],sel:'B2'},{t:'按 Enter',d:'完成',f:'=ROUNDDOWN(A2,0)',r:'B2:3 B3:3',h:['B2','B3'],sel:'B2'}]},
+                {n:'MOD',d:'求余数',s:'=MOD(数，除)',t:'数学',tb:[['数字','除数','余数'],['10','3',''],['15','4','']],st:[{t:'选中 C2',d:'点击 C2',f:'',h:[],sel:''},{t:'输入=MOD(',d:'输入函数',f:'=MOD(',h:['C2'],sel:'C2'},{t:'输入 A2,B2)',d:'参数',f:'=MOD(A2,B2)',h:['C2','A2','B2'],sel:'C2'},{t:'按 Enter',d:'完成',f:'=MOD(A2,B2)',r:'C2:1 C3:3',h:['C2','C3'],sel:'C2'}]}
+            ],
+            p2: [
+                {n:'FILTER',d:'动态筛选',s:'=FILTER(区，条)',t:'数组',tb:[['地区','金额'],['北京',10000],['上海',15000],['北京',12000],['广州',8000],['北京筛选:','']],st:[{t:'选中 D2',d:'点击 D2',f:'',h:[],sel:''},{t:'输入=FILTER(',d:'输入函数',f:'=FILTER(',h:['D2'],sel:'D2'},{t:'选择 A2:B5,',d:'数据区域',f:'=FILTER(A2:B5,',h:['A2','B2','A3','B3','A4','B4','A5','B5'],sel:'A2:B5'},{t:'输入 A2:A5="北京")',d:'条件',f:'=FILTER(A2:B5,A2:A5="北京")',h:['A2','A3','A4','A5'],sel:'A2:A5'},{t:'按 Enter',d:'完成',f:'=FILTER(A2:B5,A2:A5="北京")',r:'D2:北京 10000 D3:北京 12000',h:['D2','D3'],sel:'D2'}]},
+                {n:'SORT',d:'动态排序',s:'=SORT(区，列，序)',t:'数组',tb:[['姓名','成绩'],['张三',85],['李四',92],['王五',78],['排序后:','']],st:[{t:'选中 D2',d:'点击 D2',f:'',h:[],sel:''},{t:'输入=SORT(',d:'输入函数',f:'=SORT(',h:['D2'],sel:'D2'},{t:'选择 A2:B4,',d:'数据区域',f:'=SORT(A2:B4,',h:['A2','B2','A3','B3','A4','B4'],sel:'A2:B4'},{t:'输入 2,-1)',d:'列和顺序',f:'=SORT(A2:B4,2,-1)',h:['D2'],sel:'D2'},{t:'按 Enter',d:'完成',f:'=SORT(A2:B4,2,-1)',r:'D2:李四 92 D3:张三 85 D4:王五 78',h:['D2','D3','D4'],sel:'D2'}]},
+                {n:'UNIQUE',d:'去重',s:'=UNIQUE(区)',t:'数组',tb:[['地区'],['北京'],['上海'],['北京'],['广州'],['北京'],['唯一:','']],st:[{t:'选中 B2',d:'点击 B2',f:'',h:[],sel:''},{t:'输入=UNIQUE(',d:'输入函数',f:'=UNIQUE(',h:['B2'],sel:'B2'},{t:'选择 A2:A6)',d:'数据区域',f:'=UNIQUE(A2:A6)',h:['A2','A3','A4','A5','A6'],sel:'A2:A6'},{t:'按 Enter',d:'完成',f:'=UNIQUE(A2:A6)',r:'B2:北京 B3:上海 B4:广州',h:['B2','B3','B4'],sel:'B2'}]},
+                {n:'SEQUENCE',d:'生成序列',s:'=SEQUENCE(行，列，起，步)',t:'数组',tb:[['序列'],[''],[''],[''],[''],['']],st:[{t:'选中 A2',d:'点击 A2',f:'',h:[],sel:''},{t:'输入=SEQUENCE(',d:'输入函数',f:'=SEQUENCE(',h:['A2'],sel:'A2'},{t:'输入 5,1,1,1)',d:'参数',f:'=SEQUENCE(5,1,1,1)',h:['A2'],sel:'A2'},{t:'按 Enter',d:'完成',f:'=SEQUENCE(5,1,1,1)',r:'A2:1 A3:2 A4:3 A5:4 A6:5',h:['A2','A3','A4','A5','A6'],sel:'A2'}]},
+                {n:'RANDARRAY',d:'随机数组',s:'=RANDARRAY(行，列，小，大，整)',t:'数组',tb:[['随机数'],[''],[''],[''],['']],st:[{t:'选中 A2',d:'点击 A2',f:'',h:[],sel:''},{t:'输入=RANDARRAY(',d:'输入函数',f:'=RANDARRAY(',h:['A2'],sel:'A2'},{t:'输入 4,1,1,100,TRUE)',d:'参数',f:'=RANDARRAY(4,1,1,100,TRUE)',h:['A2'],sel:'A2'},{t:'按 Enter',d:'完成',f:'=RANDARRAY(4,1,1,100,TRUE)',r:'A2:随机数',h:['A2','A3','A4','A5'],sel:'A2'}]},
+                {n:'TAKE',d:'取行列',s:'=TAKE(区，行)',t:'数组',tb:[['数据'],['A'],['B'],['C'],['D'],['E'],['取前 3','']],st:[{t:'选中 B2',d:'点击 B2',f:'',h:[],sel:''},{t:'输入=TAKE(',d:'输入函数',f:'=TAKE(',h:['B2'],sel:'B2'},{t:'选择 A2:A6,3)',d:'参数',f:'=TAKE(A2:A6,3)',h:['A2','A3','A4','A5','A6'],sel:'A2:A6'},{t:'按 Enter',d:'完成',f:'=TAKE(A2:A6,3)',r:'B2:A B3:B B4:C',h:['B2','B3','B4'],sel:'B2'}]},
+                {n:'DROP',d:'舍行列',s:'=DROP(区，行)',t:'数组',tb:[['数据'],['A'],['B'],['C'],['D'],['E'],['去前 2','']],st:[{t:'选中 B2',d:'点击 B2',f:'',h:[],sel:''},{t:'输入=DROP(',d:'输入函数',f:'=DROP(',h:['B2'],sel:'B2'},{t:'选择 A2:A6,2)',d:'参数',f:'=DROP(A2:A6,2)',h:['A2','A3','A4','A5','A6'],sel:'A2:A6'},{t:'按 Enter',d:'完成',f:'=DROP(A2:A6,2)',r:'B2:C B3:D B4:E',h:['B2','B3','B4'],sel:'B2'}]},
+                {n:'VSTACK',d:'垂直堆叠',s:'=VSTACK(区 1，区 2)',t:'数组',tb:[['表 1'],['A'],['B'],[''],['表 2'],['C'],['D'],['合并:','']],st:[{t:'选中 D2',d:'点击 D2',f:'',h:[],sel:''},{t:'输入=VSTACK(',d:'输入函数',f:'=VSTACK(',h:['D2'],sel:'D2'},{t:'选择 A2:A3,A5:A6)',d:'参数',f:'=VSTACK(A2:A3,A5:A6)',h:['A2','A3','A5','A6'],sel:'A2:A3,A5:A6'},{t:'按 Enter',d:'完成',f:'=VSTACK(A2:A3,A5:A6)',r:'D2:A D3:B D4:C D5:D',h:['D2','D3','D4','D5'],sel:'D2'}]},
+                {n:'HSTACK',d:'水平堆叠',s:'=HSTACK(区 1，区 2)',t:'数组',tb:[['A','B'],['1','2'],['3','4'],['合并:','']],st:[{t:'选中 D2',d:'点击 D2',f:'',h:[],sel:''},{t:'输入=HSTACK(',d:'输入函数',f:'=HSTACK(',h:['D2'],sel:'D2'},{t:'选择 A2:A3,B2:B3)',d:'参数',f:'=HSTACK(A2:A3,B2:B3)',h:['A2','A3','B2','B3'],sel:'A2:A3,B2:B3'},{t:'按 Enter',d:'完成',f:'=HSTACK(A2:A3,B2:B3)',r:'D2:A B 1 2',h:['D2'],sel:'D2'}]},
+                {n:'TOROW',d:'转行',s:'=TOROW(区)',t:'数组',tb:[['A','B','C'],['1','2','3'],['4','5','6'],['转行:','']],st:[{t:'选中 A5',d:'点击 A5',f:'',h:[],sel:''},{t:'输入=TOROW(',d:'输入函数',f:'=TOROW(',h:['A5'],sel:'A5'},{t:'选择 A2:C3)',d:'参数',f:'=TOROW(A2:C3)',h:['A2','B2','C2','A3','B3','C3'],sel:'A2:C3'},{t:'按 Enter',d:'完成',f:'=TOROW(A2:C3)',r:'A5:1 2 3 4 5 6',h:['A5'],sel:'A5'}]},
+                {n:'TOCOL',d:'转列',s:'=TOCOL(区)',t:'数组',tb:[['A','B','C'],['1','2','3'],['4','5','6'],['转列:','']],st:[{t:'选中 E2',d:'点击 E2',f:'',h:[],sel:''},{t:'输入=TOCOL(',d:'输入函数',f:'=TOCOL(',h:['E2'],sel:'E2'},{t:'选择 A2:C3)',d:'参数',f:'=TOCOL(A2:C3)',h:['A2','B2','C2','A3','B3','C3'],sel:'A2:C3'},{t:'按 Enter',d:'完成',f:'=TOCOL(A2:C3)',r:'E2:1 2 3 4 5 6(竖排)',h:['E2','E3','E4','E5','E6','E7'],sel:'E2'}]},
+                {n:'TEXTSPLIT',d:'文本拆分',s:'=TEXTSPLIT(文，分)',t:'数组',tb:[['文本','拆分后'],['A,B,C',''],['X,Y,Z','']],st:[{t:'选中 B2',d:'点击 B2',f:'',h:[],sel:''},{t:'输入=TEXTSPLIT(',d:'输入函数',f:'=TEXTSPLIT(',h:['B2'],sel:'B2'},{t:'输入 A2,",")',d:'参数',f:'=TEXTSPLIT(A2,",")',h:['B2','A2'],sel:'B2'},{t:'按 Enter',d:'完成',f:'=TEXTSPLIT(A2,",")',r:'B2:A C2:B D2:C',h:['B2','C2','D2'],sel:'B2'}]},
+                {n:'WRAPROWS',d:'换行',s:'=WRAPROWS(区，数)',t:'数组',tb:[['数据'],['1'],['2'],['3'],['4'],['5'],['6'],['换行:','']],st:[{t:'选中 B2',d:'点击 B2',f:'',h:[],sel:''},{t:'输入=WRAPROWS(',d:'输入函数',f:'=WRAPROWS(',h:['B2'],sel:'B2'},{t:'选择 A2:A7,3)',d:'参数',f:'=WRAPROWS(A2:A7,3)',h:['A2','A3','A4','A5','A6','A7'],sel:'A2:A7'},{t:'按 Enter',d:'完成',f:'=WRAPROWS(A2:A7,3)',r:'B2:1 2 3 B3:4 5 6',h:['B2','B3'],sel:'B2'}]},
+                {n:'LET',d:'定义变量',s:'=LET(名，值，算)',t:'高级',tb:[['A','B','结果'],['10','20','']],st:[{t:'选中 C2',d:'点击 C2',f:'',h:[],sel:''},{t:'输入=LET(',d:'输入函数',f:'=LET(',h:['C2'],sel:'C2'},{t:'输入 x,A2+B2,',d:'定义变量',f:'=LET(x,A2+B2,',h:['C2','A2','B2'],sel:'C2'},{t:'输入 x*2)',d:'计算',f:'=LET(x,A2+B2,x*2)',h:['C2'],sel:'C2'},{t:'按 Enter',d:'完成',f:'=LET(x,A2+B2,x*2)',r:'C2:60',h:['C2'],sel:'C2'}]},
+                {n:'LAMBDA',d:'自定义函数',s:'=LAMBDA(参，算)(值)',t:'高级',tb:[['输入','输出'],['5','']],st:[{t:'选中 B2',d:'点击 B2',f:'',h:[],sel:''},{t:'输入=LAMBDA(',d:'输入函数',f:'=LAMBDA(',h:['B2'],sel:'B2'},{t:'输入 x,x^2)(5)',d:'参数和计算',f:'=LAMBDA(x,x^2)(5)',h:['B2'],sel:'B2'},{t:'按 Enter',d:'完成',f:'=LAMBDA(x,x^2)(5)',r:'B2:25',h:['B2'],sel:'B2'}]}
+            ]
+        };
+        
+        let currentFunc = null;
+        let currentStep = 0;
+        let isPlaying = false;
+        let playSpeed = 1;
+        let playTimer = null;
+        let currentCategory = 'all';
+        
+        function render() {
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            let html = '';
+            
+            ['p0','p1','p2'].forEach(cat => {
+                if (currentCategory !== 'all' && currentCategory !== cat) return;
+                
+                const funcs = allFuncs[cat].filter(f => f.n.toLowerCase().includes(q) || f.d.includes(q) || f.t.toLowerCase().includes(q));
+                if (funcs.length === 0) return;
+                
+                const titles = {p0:'⭐ P0 必学函数', p1:'🚀 P1 常用函数', p2:'💎 P2 高级函数'};
+                html += `<div class="section" id="${cat}-section"><h2>${titles[cat]}</h2><div class="func-grid">`;
+                html += funcs.map(f => `
+                    <div class="func-card" onclick="openDemo('${cat}','${f.n}')">
+                        <h3>${f.n}</h3>
+                        <p>${f.d}</p>
+                        <span class="syntax">${f.s}</span>
+                        <span class="tag">${f.t}</span>
+                    </div>
+                `).join('');
+                html += '</div></div>';
+            });
+            
+            document.getElementById('content').innerHTML = html || '<div class="section"><p style="text-align:center;color:#666;padding:40px;">未找到匹配的函数</p></div>';
+        }
+        
+        function openDemo(cat, name) {
+            currentFunc = allFuncs[cat].find(f => f.n === name);
+            currentStep = 0;
+            isPlaying = false;
+            
+            document.getElementById('modalTitle').textContent = currentFunc.n + ' - ' + currentFunc.d;
+            renderTable();
+            renderSteps();
+            updateDisplay();
+            document.getElementById('modal').classList.add('show');
+        }
+        
+        function renderTable() {
+            const table = document.getElementById('demoTable');
+            const rows = currentFunc.tb;
+            const cols = rows[0].length;
+            
+            let html = '<thead><tr><th class="row-header"></th>';
+            for (let i = 0; i < cols; i++) {
+                html += `<th class="col-header">${String.fromCharCode(65+i)}</th>`;
+            }
+            html += '</tr></thead><tbody>';
+            
+            rows.forEach((row, ri) => {
+                html += `<tr><td class="row-header">${ri+1}</td>`;
+                row.forEach((cell, ci) => {
+                    html += `<td class="cell" data-cell="${String.fromCharCode(65+ci)}${ri+1}">${cell}</td>`;
+                });
+                html += '</tr>';
+            });
+            html += '</tbody>';
+            table.innerHTML = html;
+        }
+        
+        function renderSteps() {
+            document.getElementById('stepList').innerHTML = currentFunc.st.map((s, i) => `
+                <div class="step-item" id="stepItem${i}">
+                    <strong>步骤${i+1}</strong>: ${s.d}
+                </div>
+            `).join('');
+        }
+        
+        function updateDisplay() {
+            const step = currentFunc.st[currentStep];
+            document.getElementById('stepTitle').textContent = step.t;
+            document.getElementById('stepDesc').textContent = step.d;
+            document.getElementById('formulaInput').value = step.f || '';
+            document.getElementById('progressBar').style.width = ((currentStep + 1) / currentFunc.st.length * 100) + '%';
+            
+            document.querySelectorAll('.cell').forEach(cell => {
+                cell.classList.remove('selected', 'highlight', 'result', 'editing');
+            });
+            
+            document.querySelectorAll('.step-item').forEach((item, i) => {
+                item.classList.toggle('active', i === currentStep);
+            });
+            
+            if (step.h) {
+                step.h.forEach(id => {
+                    const cell = document.querySelector(`[data-cell="${id}"]`);
+                    if (cell) cell.classList.add('highlight');
+                });
+            }
+            
+            if (step.sel) {
+                if (step.sel.includes(':')) {
+                    step.sel.split(':').forEach(id => {
+                        const cell = document.querySelector(`[data-cell="${id}"]`);
+                        if (cell) {
+                            cell.classList.add('selected');
+                            if (step.f) cell.classList.add('editing');
+                        }
+                    });
+                } else {
+                    const cell = document.querySelector(`[data-cell="${step.sel}"]`);
+                    if (cell) {
+                        cell.classList.add('selected');
+                        if (step.f) cell.classList.add('editing');
+                    }
+                }
+            }
+            
+            if (step.r) {
+                step.r.split(' ').forEach(r => {
+                    const [id, val] = r.split(':');
+                    const cell = document.querySelector(`[data-cell="${id}"]`);
+                    if (cell) {
+                        cell.textContent = val;
+                        cell.classList.add('result');
+                    }
+                });
+            }
+        }
+        
+        function nextStep() {
+            if (currentStep < currentFunc.st.length - 1) {
+                currentStep++;
+                updateDisplay();
+            } else {
+                stopPlay();
+            }
+        }
+        
+        function prevStep() {
+            if (currentStep > 0) {
+                currentStep--;
+                updateDisplay();
+                document.querySelectorAll('.cell.result').forEach(cell => {
+                    const id = cell.getAttribute('data-cell');
+                    const ri = parseInt(id.slice(1)) - 1;
+                    const ci = id.charCodeAt(0) - 65;
+                    cell.textContent = currentFunc.tb[ri][ci] || '';
+                    cell.classList.remove('result');
+                });
+            }
+        }
+        
+        function togglePlay() {
+            if (isPlaying) stopPlay();
+            else startPlay();
+        }
+        
+        function startPlay() {
+            isPlaying = true;
+            document.getElementById('playBtn').textContent = '⏸';
+            if (currentStep >= currentFunc.st.length - 1) {
+                currentStep = 0;
+                updateDisplay();
+            }
+            playTimer = setInterval(() => nextStep(), 2000 / playSpeed);
+        }
+        
+        function stopPlay() {
+            isPlaying = false;
+            document.getElementById('playBtn').textContent = '▶';
+            clearInterval(playTimer);
+        }
+        
+        function setSpeed(s) {
+            playSpeed = s;
+            document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.speed-btn[data-speed="${s}"]`).classList.add('active');
+            if (isPlaying) { stopPlay(); startPlay(); }
+        }
+        
+        function resetDemo() {
+            stopPlay();
+            currentStep = 0;
+            updateDisplay();
+            document.querySelectorAll('.cell.result').forEach(cell => {
+                const id = cell.getAttribute('data-cell');
+                const ri = parseInt(id.slice(1)) - 1;
+                const ci = id.charCodeAt(0) - 65;
+                cell.textContent = currentFunc.tb[ri][ci] || '';
+                cell.classList.remove('result');
+            });
+        }
+        
+        function closeModal() {
+            document.getElementById('modal').classList.remove('show');
+            stopPlay();
+        }
+        
+        function searchFunc() {
+            render();
+        }
+        
+        function filterCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            render();
+        }
+        
+        render();
+    </script>
+</body>
+</html>

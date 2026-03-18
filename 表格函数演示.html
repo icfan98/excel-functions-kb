@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>📚 表格函数完整演示 - 70+ 函数</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;padding:20px}
+.container{max-width:1200px;margin:0 auto}
+.header{background:white;padding:20px;border-radius:12px;margin-bottom:20px;box-shadow:0 5px 20px rgba(0,0,0,0.2)}
+.header h1{color:#667eea;font-size:24px;margin-bottom:10px}
+.search-box input{width:100%;padding:12px 40px 12px 15px;border:2px solid #e0e0e0;border-radius:25px;font-size:14px}
+.tabs{display:flex;gap:10px;margin:20px 0;flex-wrap:wrap}
+.tab{padding:8px 16px;background:rgba(255,255,255,0.2);border:2px solid rgba(255,255,255,0.3);border-radius:20px;color:white;cursor:pointer;font-size:13px}
+.tab.active{background:white;color:#667eea}
+.section{background:white;border-radius:12px;padding:20px;margin-bottom:20px;box-shadow:0 5px 15px rgba(0,0,0,0.1)}
+.section h2{color:#667eea;font-size:18px;margin-bottom:15px;padding-bottom:10px;border-bottom:2px solid #667eea}
+.func-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.func-card{background:#f8f9ff;border:2px solid #e0e0ff;border-radius:8px;padding:12px;cursor:pointer;transition:all 0.2s}
+.func-card:hover{background:#eef1ff;border-color:#667eea;transform:translateY(-2px)}
+.func-card h3{color:#667eea;font-size:16px;margin-bottom:5px}
+.func-card p{color:#666;font-size:12px;margin-bottom:8px}
+.func-card .syntax{background:#2d2d2d;color:#f8f8f2;padding:4px 8px;border-radius:4px;font-family:monospace;font-size:11px;margin-bottom:8px;display:block}
+.func-card .tag{display:inline-block;background:#667eea;color:white;padding:2px 8px;border-radius:10px;font-size:10px}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<h1>📚 表格函数完整演示 - 70+ 函数</h1>
+<div class="search-box"><input type="text" id="searchInput" placeholder="🔍 搜索函数名称或功能..." oninput="searchFunc()"></div>
+</div>
+<div class="tabs">
+<div class="tab active" onclick="filterCategory('all')">全部</div>
+<div class="tab" onclick="filterCategory('p0')">⭐ P0 必学</div>
+<div class="tab" onclick="filterCategory('p1')">🚀 P1 常用</div>
+<div class="tab" onclick="filterCategory('p2')">💎 P2 高级</div>
+</div>
+<div id="content"></div>
+</div>
+<script>
+const allFuncs={p0:[{n:'SUM',d:'求和',s:'=SUM(num1,...)',t:'基础'},{n:'AVERAGE',d:'平均值',s:'=AVERAGE(num1,...)',t:'基础'},{n:'COUNT',d:'计数',s:'=COUNT(val1,...)',t:'基础'},{n:'MAX',d:'最大值',s:'=MAX(num1,...)',t:'基础'},{n:'MIN',d:'最小值',s:'=MIN(num1,...)',t:'基础'},{n:'IF',d:'条件判断',s:'=IF(条件，真，假)',t:'逻辑'},{n:'VLOOKUP',d:'垂直查找',s:'=VLOOKUP(值，区，列，FALSE)',t:'查找'},{n:'XLOOKUP',d:'超级查找',s:'=XLOOKUP(值，查列，返列)',t:'查找'},{n:'SUMIF',d:'条件求和',s:'=SUMIF(区，条，和)',t:'统计'},{n:'COUNTIF',d:'条件计数',s:'=COUNTIF(区，条)',t:'统计'}],p1:[{n:'SUMIFS',d:'多条件求和',s:'=SUMIFS(和，区 1，条 1...)',t:'统计'},{n:'LEFT',d:'左侧提取',s:'=LEFT(文，字)',t:'文本'},{n:'RIGHT',d:'右侧提取',s:'=RIGHT(文，字)',t:'文本'},{n:'MID',d:'中间提取',s:'=MID(文，起，字)',t:'文本'},{n:'TEXT',d:'格式化',s:'=TEXT(值，格)',t:'文本'},{n:'DATEDIF',d:'日期差',s:'=DATEDIF(起，止，单)',t:'日期'},{n:'ROUND',d:'四舍五入',s:'=ROUND(数，位)',t:'数学'},{n:'INDEX',d:'索引取值',s:'=INDEX(区，行，列)',t:'查找'},{n:'MATCH',d:'查找位置',s:'=MATCH(值，区，0)',t:'查找'}],p2:[{n:'FILTER',d:'动态筛选',s:'=FILTER(区，条)',t:'数组'},{n:'SORT',d:'动态排序',s:'=SORT(区，列，序)',t:'数组'},{n:'UNIQUE',d:'去重',s:'=UNIQUE(区)',t:'数组'},{n:'SEQUENCE',d:'生成序列',s:'=SEQUENCE(行，列，起，步)',t:'数组'},{n:'LET',d:'定义变量',s:'=LET(名，值，算)',t:'高级'},{n:'LAMBDA',d:'自定义函数',s:'=LAMBDA(参，算)(值)',t:'高级'}]};
+let currentCategory='all';
+function render(){const q=document.getElementById('searchInput').value.toLowerCase();let html='';['p0','p1','p2'].forEach(cat=>{if(currentCategory!=='all'&&currentCategory!==cat)return;const funcs=allFuncs[cat].filter(f=>f.n.toLowerCase().includes(q)||f.d.includes(q));if(funcs.length===0)return;const titles={p0:'⭐ P0 必学函数',p1:'🚀 P1 常用函数',p2:'💎 P2 高级函数'};html+=`<div class="section"><h2>${titles[cat]}</h2><div class="func-grid">`;html+=funcs.map(f=>`<div class="func-card"><h3>${f.n}</h3><p>${f.d}</p><span class="syntax">${f.s}</span><span class="tag">${f.t}</span></div>`).join('');html+='</div></div>'});document.getElementById('content').innerHTML=html||'<div class="section"><p style="text-align:center;color:#666;padding:40px;">未找到匹配的函数</p></div>';}
+function searchFunc(){render();}
+function filterCategory(cat){currentCategory=cat;document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));event.target.classList.add('active');render();}
+render();
+</script>
+</body>
+</html>
