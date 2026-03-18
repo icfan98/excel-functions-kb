@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>120 函数演示 - 实时进度</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 30px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .card { background: white; border-radius: 16px; padding: 30px; margin-bottom: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
+        h1 { color: #667eea; font-size: 28px; margin-bottom: 10px; }
+        .subtitle { color: #666; font-size: 14px; margin-bottom: 25px; }
+        
+        .progress-section { margin: 25px 0; }
+        .progress-label { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #333; }
+        .progress-bar-container { background: #e0e0e0; height: 30px; border-radius: 15px; overflow: hidden; position: relative; }
+        .progress-bar { background: linear-gradient(90deg, #0078d4, #217346); height: 100%; transition: width 0.5s ease; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; color: white; font-weight: bold; font-size: 14px; }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 25px 0; }
+        .stat-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; }
+        .stat-value { font-size: 36px; font-weight: bold; margin-bottom: 5px; }
+        .stat-label { font-size: 13px; opacity: 0.9; }
+        
+        .phase-list { margin: 20px 0; }
+        .phase-item { background: #f8f9ff; border-left: 4px solid #667eea; padding: 15px; margin: 10px 0; border-radius: 4px; }
+        .phase-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .phase-name { font-weight: 600; color: #333; }
+        .phase-progress { font-size: 13px; color: #666; }
+        .phase-bar { background: #e0e0e0; height: 8px; border-radius: 4px; overflow: hidden; }
+        .phase-fill { background: linear-gradient(90deg, #0078d4, #217346); height: 100%; transition: width 0.5s ease; }
+        
+        .completed-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; margin: 15px 0; }
+        .func-tag { background: #d4edda; color: #155724; padding: 8px 12px; border-radius: 20px; font-size: 12px; text-align: center; border: 1px solid #c3e6cb; }
+        .pending-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; margin: 15px 0; }
+        .func-tag.pending { background: #fff3cd; color: #856404; border-color: #ffeaa7; }
+        
+        .time-estimate { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 20px; border-radius: 12px; margin: 20px 0; }
+        .time-row { display: flex; justify-content: space-between; margin: 8px 0; font-size: 14px; }
+        
+        .refresh-btn { background: #0078d4; color: white; border: none; padding: 12px 30px; border-radius: 8px; font-size: 14px; cursor: pointer; margin: 20px 0; }
+        .refresh-btn:hover { background: #005a9e; }
+        
+        .auto-refresh { text-align: center; color: #666; font-size: 12px; margin-top: 15px; }
+        .pulse { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>📊 120 函数交互演示 - 实时进度</h1>
+            <p class="subtitle">最后更新：<span id="lastUpdate">--</span> | 自动刷新中 <span class="pulse">●</span></p>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalCount">0</div>
+                    <div class="stat-label">总函数数</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #0078d4, #217346);">
+                    <div class="stat-value" id="completedCount">0</div>
+                    <div class="stat-label">已完成</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                    <div class="stat-value" id="remainingCount">0</div>
+                    <div class="stat-label">剩余</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                    <div class="stat-value" id="percentValue">0%</div>
+                    <div class="stat-label">完成度</div>
+                </div>
+            </div>
+            
+            <div class="progress-section">
+                <div class="progress-label">
+                    <span>总体进度</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="mainProgressBar" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <div class="time-estimate">
+                <h3 style="margin-bottom: 15px;">⏱️ 时间预估</h3>
+                <div class="time-row"><span>剩余函数:</span><span id="estRemaining">0 个</span></div>
+                <div class="time-row"><span>预估时间:</span><span id="estTime">0 分钟</span></div>
+                <div class="time-row"><span>预计完成:</span><span id="estComplete">--:--</span></div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2 style="color: #667eea; margin-bottom: 20px;">📈 分类进度</h2>
+            <div class="phase-list">
+                <div class="phase-item">
+                    <div class="phase-header">
+                        <span class="phase-name">⭐ P0 必学函数</span>
+                        <span class="phase-progress" id="p0Progress">0/15</span>
+                    </div>
+                    <div class="phase-bar"><div class="phase-fill" id="p0Fill" style="width: 0%"></div></div>
+                </div>
+                <div class="phase-item">
+                    <div class="phase-header">
+                        <span class="phase-name">🚀 P1 常用函数</span>
+                        <span class="phase-progress" id="p1Progress">0/25</span>
+                    </div>
+                    <div class="phase-bar"><div class="phase-fill" id="p1Fill" style="width: 0%"></div></div>
+                </div>
+                <div class="phase-item">
+                    <div class="phase-header">
+                        <span class="phase-name">💎 P2 高级函数</span>
+                        <span class="phase-progress" id="p2Progress">0/20</span>
+                    </div>
+                    <div class="phase-bar"><div class="phase-fill" id="p2Fill" style="width: 0%"></div></div>
+                </div>
+                <div class="phase-item">
+                    <div class="phase-header">
+                        <span class="phase-name">📚 P3+ 其他函数</span>
+                        <span class="phase-progress" id="p3Progress">0/60</span>
+                    </div>
+                    <div class="phase-bar"><div class="phase-fill" id="p3Fill" style="width: 0%"></div></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2 style="color: #667eea; margin-bottom: 20px;">✅ 已完成函数</h2>
+            <div class="completed-list" id="completedList"></div>
+        </div>
+        
+        <button class="refresh-btn" onclick="loadProgress()">🔄 手动刷新</button>
+        <p class="auto-refresh">页面将每 3 秒自动刷新一次</p>
+    </div>
+    
+    <script>
+        async function loadProgress() {
+            try {
+                const response = await fetch('temp/演示进度追踪.json?t=' + Date.now());
+                const data = await response.json();
+                updateDisplay(data);
+                document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString('zh-CN');
+            } catch (e) {
+                console.log('Loading progress...', e);
+            }
+        }
+        
+        function updateDisplay(data) {
+            const completed = data.completedCount || 0;
+            const total = data.totalFunctions || 120;
+            const remaining = total - completed;
+            const percent = Math.round((completed / total) * 100);
+            
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('completedCount').textContent = completed;
+            document.getElementById('remainingCount').textContent = remaining;
+            document.getElementById('percentValue').textContent = percent + '%';
+            
+            document.getElementById('progressPercent').textContent = percent + '%';
+            document.getElementById('mainProgressBar').style.width = percent + '%';
+            document.getElementById('mainProgressBar').textContent = completed + '/' + total;
+            
+            const estMinutes = Math.round(remaining * 0.5);
+            document.getElementById('estRemaining').textContent = remaining + '个';
+            document.getElementById('estTime').textContent = estMinutes + '分钟';
+            
+            const now = new Date();
+            now.setMinutes(now.getMinutes() + estMinutes);
+            document.getElementById('estComplete').textContent = now.toLocaleTimeString('zh-CN', {hour: '2-digit', minute:'2-digit'});
+            
+            const phases = data.phases || {};
+            if (phases.P0) {
+                document.getElementById('p0Progress').textContent = phases.P0.completed + '/' + phases.P0.total;
+                document.getElementById('p0Fill').style.width = Math.round((phases.P0.completed / phases.P0.total) * 100) + '%';
+            }
+            if (phases.P1) {
+                document.getElementById('p1Progress').textContent = phases.P1.completed + '/' + phases.P1.total;
+                document.getElementById('p1Fill').style.width = Math.round((phases.P1.completed / phases.P1.total) * 100) + '%';
+            }
+            if (phases.P2) {
+                document.getElementById('p2Progress').textContent = phases.P2.completed + '/' + phases.P2.total;
+                document.getElementById('p2Fill').style.width = Math.round((phases.P2.completed / phases.P2.total) * 100) + '%';
+            }
+            
+            const completedList = document.getElementById('completedList');
+            completedList.innerHTML = '';
+            if (phases.P0) {
+                phases.P0.functions.forEach(f => {
+                    if (f.status === 'completed') {
+                        const tag = document.createElement('div');
+                        tag.className = 'func-tag';
+                        tag.textContent = f.name;
+                        completedList.appendChild(tag);
+                    }
+                });
+            }
+            if (phases.P1) {
+                phases.P1.functions.forEach(f => {
+                    if (f.status === 'completed') {
+                        const tag = document.createElement('div');
+                        tag.className = 'func-tag';
+                        tag.textContent = f.name;
+                        completedList.appendChild(tag);
+                    }
+                });
+            }
+        }
+        
+        loadProgress();
+        setInterval(loadProgress, 3000);
+    </script>
+</body>
+</html>

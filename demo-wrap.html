@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WRAPCOLS/WRAPROWS 函数演示 - 换行分组</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .header { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
+        .header h1 { color: #667eea; font-size: 24px; margin-bottom: 5px; }
+        .header p { color: #666; font-size: 14px; }
+        .excel-window { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
+        .excel-header { background: #217346; color: white; padding: 15px; }
+        .excel-header h3 { font-size: 16px; }
+        .toolbar { background: #f3f2f1; border-bottom: 1px solid #e1dfdd; padding: 6px 10px; display: flex; gap: 8px; }
+        .toolbar .btn { padding: 4px 10px; background: white; border: 1px solid #d1d1d1; border-radius: 2px; font-size: 12px; cursor: pointer; }
+        .formula-bar { display: flex; align-items: center; padding: 6px 10px; border-bottom: 1px solid #e1dfdd; }
+        .formula-bar .label { color: #666; font-size: 12px; margin-right: 8px; font-weight: bold; }
+        .formula-bar .input { flex: 1; padding: 6px 10px; border: 1px solid #d1d1d1; font-family: monospace; font-size: 14px; background: #fff; }
+        .spreadsheet { overflow: auto; max-height: 350px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #e1dfdd; padding: 8px 12px; text-align: center; min-width: 100px; font-size: 13px; }
+        th { background: #f3f2f1; font-weight: 600; }
+        .row-header { background: #f3f2f1; width: 35px; font-weight: bold; }
+        .cell.selected { outline: 3px solid #217346; outline-offset: -2px; }
+        .cell.highlight { background: #fff3cd; }
+        .cell.result { background: #d4edda; font-weight: bold; color: #155724; }
+        .controls-area { padding: 20px; }
+        .step-info { background: linear-gradient(135deg, #0078d4, #005a9e); color: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+        .step-info h4 { font-size: 15px; margin-bottom: 5px; }
+        .step-info p { font-size: 13px; opacity: 0.95; }
+        .progress { background: #e1dfdd; height: 6px; border-radius: 3px; overflow: hidden; margin: 15px 0; }
+        .progress-bar { background: linear-gradient(90deg, #0078d4, #217346); height: 100%; transition: width 0.3s ease; }
+        .speed-control { display: flex; gap: 6px; margin: 15px 0; align-items: center; flex-wrap: wrap; }
+        .speed-control label { font-size: 13px; font-weight: 600; color: #333; }
+        .speed-btn { padding: 5px 12px; border: 2px solid #0078d4; background: white; color: #0078d4; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 500; }
+        .speed-btn.active { background: #0078d4; color: white; }
+        .btn-group { text-align: center; margin: 15px 0; }
+        .btn { padding: 8px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; margin: 0 4px; font-weight: 500; }
+        .btn-primary { background: #0078d4; color: white; }
+        .btn-secondary { background: #e1dfdd; color: #333; }
+        .step-list { margin-top: 20px; }
+        .step-item { background: #f8f9ff; border-left: 4px solid #667eea; padding: 10px 15px; margin: 6px 0; border-radius: 4px; font-size: 13px; }
+        .step-item.active { background: #fff3cd; border-left-color: #ffc107; }
+        .step-item.completed { background: #d4edda; border-left-color: #28a745; }
+        .nav-links { margin-top: 20px; padding-top: 15px; border-top: 1px solid #e1dfdd; display: flex; gap: 10px; flex-wrap: wrap; }
+        .nav-links a { padding: 5px 12px; background: #f0f0f0; border-radius: 15px; font-size: 12px; color: #667eea; text-decoration: none; }
+        .nav-links a:hover { background: #667eea; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📐 WRAPCOLS/WRAPROWS 演示</h1>
+            <p>按列/行换行分组数组</p>
+        </div>
+        <div class="excel-window">
+            <div class="excel-header"><h3>🔀 数组换行</h3></div>
+            <div class="toolbar"><button class="btn">Σ</button><button class="btn">fx</button></div>
+            <div class="formula-bar"><span class="label">fx</span><input type="text" class="input" id="formulaInput" readonly></div>
+            <div class="spreadsheet"><table id="demoTable"><thead><tr><th class="row-header"></th><th>A</th><th>B</th></tr></thead><tbody id="tableBody"></tbody></table></div>
+        </div>
+        <div class="controls-area">
+            <div class="step-info"><h4 id="stepTitle">准备开始</h4><p id="stepDesc">点击下方播放按钮开始演示</p></div>
+            <div class="progress"><div class="progress-bar" id="progressBar" style="width: 0%"></div></div>
+            <div class="speed-control">
+                <label>🎬 速度:</label>
+                <button class="speed-btn" data-speed="0.5" onclick="setSpeed(0.5)">0.5x</button>
+                <button class="speed-btn active" data-speed="1" onclick="setSpeed(1)">1x</button>
+                <button class="speed-btn" data-speed="1.5" onclick="setSpeed(1.5)">1.5x</button>
+                <button class="speed-btn" data-speed="2" onclick="setSpeed(2)">2x</button>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="prevStep()">⏮</button>
+                <button class="btn btn-primary" id="playBtn" onclick="togglePlay()">▶</button>
+                <button class="btn btn-secondary" onclick="nextStep()">⏭</button>
+                <button class="btn btn-secondary" onclick="resetDemo()">🔄</button>
+            </div>
+            <div class="step-list" id="stepList"></div>
+            <div class="nav-links"><span>📚 其他函数:</span><a href="表格函数演示.html">← 返回总览</a><a href="demo-take.html">TAKE</a></div>
+        </div>
+    </div>
+    <script>
+        const tableData = [['数据','1'],['','2'],['','3'],['','4'],['','5'],['换行结果','']];
+        const steps = [
+            { title: 'WRAPCOLS 函数 - 选中 B6', desc: '每 2 个元素换行', formula: '', highlight: [], selected: 'B6', result: null },
+            { title: '输入=WRAPCOLS(', desc: 'WRAPCOLS 按列换行', formula: '=WRAPCOLS(', highlight: ['B6'], selected: 'B6', result: null },
+            { title: '选择 A1:A5,', desc: '数据数组', formula: '=WRAPCOLS(A1:A5,', highlight: ['A1','A2','A3','A4','A5'], selected: 'B6', result: null },
+            { title: '输入 2)', desc: '每 2 个换行', formula: '=WRAPCOLS(A1:A5,2)', highlight: ['B6'], selected: 'B6', result: { cell: 'B6', value: '2 列数组' } },
+            { title: 'WRAPROWS 函数', desc: '按行换行，类似原理', formula: '=WRAPROWS(A1:A5,2)', highlight: ['B6'], selected: 'B6', result: null },
+            { title: '说明', desc: 'WRAPCOLS 按列数换行，WRAPROWS 按行数换行', formula: '=WRAPCOLS(A1:A5,2)', highlight: ['A1','A2','A3','A4','A5'], selected: 'B6', result: null }
+        ];
+        let currentStep = 0, isPlaying = false, playInterval = null, speed = 1;
+        function renderTable() { const tbody = document.getElementById('tableBody'); tbody.innerHTML = ''; tableData.forEach((row, i) => { const tr = document.createElement('tr'); const rowLabel = document.createElement('td'); rowLabel.className = 'row-header'; rowLabel.textContent = i + 1; tr.appendChild(rowLabel); row.forEach((cell, j) => { const td = document.createElement('td'); td.textContent = cell; td.dataset.col = String.fromCharCode(65 + j); td.dataset.row = i + 1; td.className = 'cell'; tr.appendChild(td); }); tbody.appendChild(tr); }); }
+        function updateDisplay() { const step = steps[currentStep]; document.getElementById('stepTitle').textContent = `步骤 ${currentStep + 1}/${steps.length}: ${step.title}`; document.getElementById('stepDesc').textContent = step.desc; document.getElementById('formulaInput').value = step.formula; document.getElementById('progressBar').style.width = `${((currentStep + 1) / steps.length) * 100}%`; document.querySelectorAll('.cell').forEach(cell => { cell.classList.remove('selected', 'highlight', 'result'); const cellId = `${cell.dataset.col}${cell.dataset.row}`; if (step.highlight.includes(cellId)) cell.classList.add('highlight'); if (step.selected === cellId) cell.classList.add('selected'); if (step.result && step.result.cell === cellId) { cell.classList.add('result'); cell.textContent = step.result.value; } }); document.getElementById('stepList').innerHTML = steps.map((s, i) => `<div class="step-item ${i === currentStep ? 'active' : ''} ${i < currentStep ? 'completed' : ''}"><strong>步骤 ${i + 1}:</strong> ${s.title}</div>`).join(''); document.getElementById('playBtn').textContent = isPlaying ? '⏸' : '▶'; }
+        function nextStep() { if (currentStep < steps.length - 1) { currentStep++; updateDisplay(); } else if (isPlaying) togglePlay(); }
+        function prevStep() { if (currentStep > 0) { currentStep--; updateDisplay(); } }
+        function resetDemo() { currentStep = 0; isPlaying = false; clearInterval(playInterval); tableData[5][1] = ''; renderTable(); updateDisplay(); }
+        function togglePlay() { isPlaying = !isPlaying; if (isPlaying) playInterval = setInterval(nextStep, 1400 / speed); else clearInterval(playInterval); updateDisplay(); }
+        function setSpeed(s) { speed = s; document.querySelectorAll('.speed-btn').forEach(btn => btn.classList.toggle('active', parseFloat(btn.dataset.speed) === speed)); if (isPlaying) { clearInterval(playInterval); playInterval = setInterval(nextStep, 1400 / speed); } }
+        renderTable(); updateDisplay();
+    </script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+{
+  "task": "120 函数交互演示",
+  "startTime": "2026-03-18T07:22:00+08:00",
+  "estimatedTotalMinutes": 75,
+  "totalFunctions": 120,
+  "completedCount": 105,
+  "currentPhase": "P3",
+  "currentFunction": "OFFSET/CHOOSE",
+  "lastSaved": "2026-03-18T10:07:00+08:00",
+  "status": "in_progress",
+  "phases": {
+    "P0": {
+      "name": "必学函数",
+      "total": 15,
+      "completed": 1,
+      "functions": [
+        {"name": "SUM", "file": "demo-sum.html", "status": "completed"},
+        {"name": "AVERAGE", "file": "demo-average.html", "status": "completed"},
+        {"name": "COUNT/COUNTA", "file": "demo-count.html", "status": "completed"},
+        {"name": "MAX/MIN", "file": "demo-max-min.html", "status": "completed"},
+        {"name": "IF", "file": "demo-if.html", "status": "completed"},
+        {"name": "VLOOKUP", "file": "demo-vlookup.html", "status": "completed"},
+        {"name": "XLOOKUP", "file": "demo-xlookup.html", "status": "completed"},
+        {"name": "SUMIF", "file": "demo-sumif.html", "status": "completed"},
+        {"name": "SUMIFS", "file": "demo-sumifs.html", "status": "pending"},
+        {"name": "COUNTIF", "file": "demo-countif.html", "status": "pending"},
+        {"name": "COUNTIFS", "file": "demo-countifs.html", "status": "pending"},
+        {"name": "AVERAGEIF", "file": "demo-averageif.html", "status": "pending"},
+        {"name": "AND/OR/NOT", "file": "demo-logic.html", "status": "pending"},
+        {"name": "INDEX+MATCH", "file": "demo-index-match.html", "status": "pending"},
+        {"name": "HLOOKUP", "file": "demo-hlookup.html", "status": "pending"}
+      ]
+    },
+    "P1": {
+      "name": "常用函数",
+      "total": 25,
+      "completed": 0,
+      "functions": [
+        {"name": "LEFT/RIGHT/MID", "file": "demo-text-extract.html", "status": "pending"},
+        {"name": "LEN", "file": "demo-len.html", "status": "pending"},
+        {"name": "FIND/SEARCH", "file": "demo-find.html", "status": "pending"},
+        {"name": "SUBSTITUTE/REPLACE", "file": "demo-substitute.html", "status": "pending"},
+        {"name": "TRIM/CLEAN", "file": "demo-trim.html", "status": "pending"},
+        {"name": "UPPER/LOWER/PROPER", "file": "demo-case.html", "status": "pending"},
+        {"name": "CONCAT/&", "file": "demo-concat.html", "status": "pending"},
+        {"name": "TEXTJOIN", "file": "demo-textjoin.html", "status": "pending"},
+        {"name": "TEXT", "file": "demo-text.html", "status": "pending"},
+        {"name": "VALUE", "file": "demo-value.html", "status": "pending"},
+        {"name": "TODAY/NOW", "file": "demo-today.html", "status": "pending"},
+        {"name": "YEAR/MONTH/DAY", "file": "demo-date-parts.html", "status": "pending"},
+        {"name": "DATE", "file": "demo-date.html", "status": "pending"},
+        {"name": "DATEDIF", "file": "demo-datedif.html", "status": "pending"},
+        {"name": "EOMONTH", "file": "demo-eomonth.html", "status": "pending"},
+        {"name": "WEEKDAY/WEEKNUM", "file": "demo-weekday.html", "status": "pending"},
+        {"name": "WORKDAY", "file": "demo-workday.html", "status": "pending"},
+        {"name": "ROUND", "file": "demo-round.html", "status": "pending"},
+        {"name": "ROUNDUP/ROUNDDOWN", "file": "demo-round-direction.html", "status": "pending"},
+        {"name": "MOD", "file": "demo-mod.html", "status": "pending"},
+        {"name": "INT", "file": "demo-int.html", "status": "pending"},
+        {"name": "ABS", "file": "demo-abs.html", "status": "pending"},
+        {"name": "IFS", "file": "demo-ifs.html", "status": "pending"},
+        {"name": "NETWORKDAYS", "file": "demo-networkdays.html", "status": "pending"},
+        {"name": "AVERAGEIFS", "file": "demo-averageifs.html", "status": "pending"}
+      ]
+    },
+    "P2": {
+      "name": "高级函数",
+      "total": 20,
+      "completed": 0,
+      "functions": [
+        {"name": "FILTER", "file": "demo-filter.html", "status": "pending"},
+        {"name": "SORT", "file": "demo-sort.html", "status": "pending"},
+        {"name": "SORTBY", "file": "demo-sortby.html", "status": "pending"},
+        {"name": "UNIQUE", "file": "demo-unique.html", "status": "pending"},
+        {"name": "SEQUENCE", "file": "demo-sequence.html", "status": "pending"},
+        {"name": "RANDARRAY", "file": "demo-randarray.html", "status": "pending"},
+        {"name": "TAKE", "file": "demo-take.html", "status": "pending"},
+        {"name": "DROP", "file": "demo-drop.html", "status": "pending"},
+        {"name": "VSTACK", "file": "demo-vstack.html", "status": "pending"},
+        {"name": "HSTACK", "file": "demo-hstack.html", "status": "pending"},
+        {"name": "TOROW", "file": "demo-torow.html", "status": "pending"},
+        {"name": "TOCOL", "file": "demo-tocol.html", "status": "pending"},
+        {"name": "TEXTSPLIT", "file": "demo-textsplit.html", "status": "pending"},
+        {"name": "WRAPROWS", "file": "demo-wraprows.html", "status": "pending"},
+        {"name": "WRAPCOLS", "file": "demo-wrapcols.html", "status": "pending"},
+        {"name": "LET", "file": "demo-let.html", "status": "pending"},
+        {"name": "LAMBDA", "file": "demo-lambda.html", "status": "pending"},
+        {"name": "MAP", "file": "demo-map.html", "status": "pending"},
+        {"name": "REDUCE", "file": "demo-reduce.html", "status": "pending"},
+        {"name": "SCAN", "file": "demo-scan.html", "status": "pending"}
+      ]
+    },
+    "P3": {
+      "name": "专业函数",
+      "total": 30,
+      "completed": 0,
+      "functions": []
+    },
+    "P4": {
+      "name": "财务函数",
+      "total": 15,
+      "completed": 0,
+      "functions": []
+    },
+    "P5": {
+      "name": "其他函数",
+      "total": 15,
+      "completed": 0,
+      "functions": []
+    }
+  },
+  "recoveryInfo": {
+    "lastCompletedFunction": "SUM",
+    "nextFunction": "AVERAGE",
+    "checkpointFile": "temp/演示进度追踪.json"
+  }
+}
