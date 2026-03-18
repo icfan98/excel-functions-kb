@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>120 个 Excel 函数演示 - 完整导航</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: white; padding: 30px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); text-align: center; }
+        .header h1 { color: #667eea; font-size: 32px; margin-bottom: 10px; }
+        .header p { color: #666; font-size: 16px; }
+        .progress-container { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
+        .progress-bar { background: #e1dfdd; height: 20px; border-radius: 10px; overflow: hidden; margin: 15px 0; }
+        .progress-fill { background: linear-gradient(90deg, #0078d4, #217346); height: 100%; transition: width 0.3s ease; }
+        .stats { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+        .stat-card { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 15px 25px; border-radius: 8px; text-align: center; min-width: 150px; }
+        .stat-number { font-size: 32px; font-weight: bold; }
+        .stat-label { font-size: 14px; opacity: 0.9; }
+        .function-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-top: 20px; }
+        .function-card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); transition: transform 0.2s; }
+        .function-card:hover { transform: translateY(-3px); box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
+        .function-card a { color: #667eea; text-decoration: none; font-weight: 500; }
+        .function-card a:hover { text-decoration: underline; }
+        .category { margin: 20px 0; }
+        .category-title { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 10px 15px; border-radius: 8px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 120 个 Excel 函数演示</h1>
+            <p>完整导航页 - 所有函数演示一览</p>
+        </div>
+        
+        <div class="progress-container">
+            <h2>📈 完成进度</h2>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 100%"></div>
+            </div>
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number">120</div>
+                    <div class="stat-label">总函数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">120</div>
+                    <div class="stat-label">已完成</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">完成度</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="category">
+            <div class="category-title">🏠 P0 基础函数 (15 个)</div>
+            <div class="function-grid">
+                <div class="function-card"><a href="demo-sum.html">SUM 求和</a></div>
+                <div class="function-card"><a href="demo-average.html">AVERAGE 平均</a></div>
+                <div class="function-card"><a href="demo-count.html">COUNT 计数</a></div>
+                <div class="function-card"><a href="demo-max-min.html">MAX/MIN 最值</a></div>
+                <div class="function-card"><a href="demo-if.html">IF 条件</a></div>
+                <div class="function-card"><a href="demo-vlookup.html">VLOOKUP 查找</a></div>
+                <div class="function-card"><a href="demo-xlookup.html">XLOOKUP 新查找</a></div>
+                <div class="function-card"><a href="demo-sumif.html">SUMIF 条件求和</a></div>
+                <div class="function-card"><a href="demo-sumifs.html">SUMIFS 多条件</a></div>
+                <div class="function-card"><a href="demo-countifs.html">COUNTIFS 计数</a></div>
+                <div class="function-card"><a href="demo-index-match.html">INDEX+MATCH</a></div>
+                <div class="function-card"><a href="demo-hlookup.html">HLOOKUP 横向</a></div>
+                <div class="function-card"><a href="demo-text.html">TEXT 格式化</a></div>
+                <div class="function-card"><a href="demo-round.html">ROUND 四舍五入</a></div>
+                <div class="function-card"><a href="demo-today.html">TODAY/NOW 日期</a></div>
+            </div>
+        </div>
+
+        <div class="category">
+            <div class="category-title">🚀 P1 常用函数 (25 个)</div>
+            <div class="function-grid">
+                <div class="function-card"><a href="demo-filter.html">FILTER 筛选</a></div>
+                <div class="function-card"><a href="demo-sort.html">SORT 排序</a></div>
+                <div class="function-card"><a href="demo-unique.html">UNIQUE 去重</a></div>
+                <div class="function-card"><a href="demo-substitute.html">SUBSTITUTE 替换</a></div>
+                <div class="function-card"><a href="demo-concat.html">CONCAT 连接</a></div>
+                <div class="function-card"><a href="demo-trim.html">TRIM 清理</a></div>
+                <div class="function-card"><a href="demo-datedif.html">DATEDIF 日期差</a></div>
+                <div class="function-card"><a href="demo-mod.html">MOD 取余</a></div>
+                <div class="function-card"><a href="demo-abs.html">ABS 绝对值</a></div>
+                <div class="function-card"><a href="demo-sequence.html">SEQUENCE 序列</a></div>
+                <div class="function-card"><a href="demo-iferror.html">IFERROR 容错</a></div>
+                <div class="function-card"><a href="demo-ifs.html">IFS 多条件</a></div>
+                <div class="function-card"><a href="demo-randarray.html">RANDARRAY 随机</a></div>
+                <div class="function-card"><a href="demo-textsplit.html">TEXTSPLIT 分割</a></div>
+                <div class="function-card"><a href="demo-take.html">TAKE 提取</a></div>
+                <div class="function-card"><a href="demo-drop.html">DROP 删除</a></div>
+                <div class="function-card"><a href="demo-rate.html">RATE 利率</a></div>
+                <div class="function-card"><a href="demo-text-advanced.html">TEXT 高级</a></div>
+                <div class="function-card"><a href="demo-eomonth.html">EOMONTH 月末</a></div>
+                <div class="function-card"><a href="demo-workday.html">WORKDAY 工作日</a></div>
+                <div class="function-card"><a href="demo-find.html">FIND 查找</a></div>
+                <div class="function-card"><a href="demo-case.html">大小写转换</a></div>
+                <div class="function-card"><a href="demo-date.html">DATE 日期</a></div>
+                <div class="function-card"><a href="demo-averageifs.html">AVERAGEIFS 平均</a></div>
+                <div class="function-card"><a href="demo-int.html">INT 取整</a></div>
+            </div>
+        </div>
+
+        <div class="category">
+            <div class="category-title">💎 P2 高级函数 (20 个)</div>
+            <div class="function-grid">
+                <div class="function-card"><a href="demo-vstack.html">VSTACK 堆叠</a></div>
+                <div class="function-card"><a href="demo-hstack.html">HSTACK 堆叠</a></div>
+                <div class="function-card"><a href="demo-let.html">LET 变量</a></div>
+                <div class="function-card"><a href="demo-lambda.html">LAMBDA 自定义</a></div>
+                <div class="function-card"><a href="demo-sortby.html">SORTBY 多条件排序</a></div>
+                <div class="function-card"><a href="demo-unique-advanced.html">UNIQUE 高级</a></div>
+                <div class="function-card"><a href="demo-sort-advanced.html">SORT 高级</a></div>
+                <div class="function-card"><a href="demo-torow.html">TOROW 转行</a></div>
+                <div class="function-card"><a href="demo-tocol.html">TOCOL 转列</a></div>
+                <div class="function-card"><a href="demo-wraprows.html">WRAPROWS 分行</a></div>
+                <div class="function-card"><a href="demo-wrapcols.html">WRAPCOLS 分列</a></div>
+                <div class="function-card"><a href="demo-map.html">MAP 映射</a></div>
+                <div class="function-card"><a href="demo-reduce.html">REDUCE 累积</a></div>
+                <div class="function-card"><a href="demo-scan.html">SCAN 扫描</a></div>
+                <div class="function-card"><a href="demo-byrow.html">BYROW 按行</a></div>
+                <div class="function-card"><a href="demo-bycol.html">BYCOL 按列</a></div>
+                <div class="function-card"><a href="demo-makearray.html">MAKEARRAY 数组</a></div>
+                <div class="function-card"><a href="demo-expand.html">EXPAND 扩展</a></div>
+                <div class="function-card"><a href="demo-arraytotext.html">ARRAYTOTEXT 转文本</a></div>
+                <div class="function-card"><a href="demo-xmatch.html">XMATCH 高级匹配</a></div>
+            </div>
+        </div>
+
+        <div class="category">
+            <div class="category-title">📋 P3+ 其他函数 (60 个)</div>
+            <div class="function-grid">
+                <div class="function-card"><a href="demo-offset.html">OFFSET 偏移</a></div>
+                <div class="function-card"><a href="demo-indirect.html">INDIRECT 间接</a></div>
+                <div class="function-card"><a href="demo-choose.html">CHOOSE 选择</a></div>
+                <div class="function-card"><a href="demo-transpose.html">TRANSPOSE 转置</a></div>
+                <div class="function-card"><a href="demo-hyperlink.html">HYPERLINK 链接</a></div>
+                <div class="function-card"><a href="demo-pmt.html">PMT 贷款</a></div>
+                <div class="function-card"><a href="demo-pv.html">PV 现值</a></div>
+                <div class="function-card"><a href="demo-fv.html">FV 终值</a></div>
+                <div class="function-card"><a href="demo-npv.html">NPV 净现值</a></div>
+                <div class="function-card"><a href="demo-irr.html">IRR 内部收益率</a></div>
+                <div class="function-card"><a href="demo-correl.html">CORREL 相关系数</a></div>
+                <div class="function-card"><a href="demo-forecast.html">FORECAST 预测</a></div>
+                <div class="function-card"><a href="demo-trend.html">TREND 趋势</a></div>
+                <div class="function-card"><a href="demo-growth.html">GROWTH 增长</a></div>
+                <div class="function-card"><a href="demo-linest.html">LINEST 线性拟合</a></div>
+                <div class="function-card"><a href="demo-logest.html">LOGEST 对数拟合</a></div>
+                <div class="function-card"><a href="demo-binomdist.html">BINOMDIST 二项分布</a></div>
+                <div class="function-card"><a href="demo-normdist.html">NORMDIST 正态分布</a></div>
+                <div class="function-card"><a href="demo-sln.html">SLN 直线折旧</a></div>
+                <div class="function-card"><a href="demo-db.html">DB 余额递减</a></div>
+                <div class="function-card"><a href="demo-ddb.html">DDB 双倍余额</a></div>
+                <div class="function-card"><a href="demo-networkdays.html">NETWORKDAYS 工作日</a></div>
+                <div class="function-card"><a href="demo-aggregate.html">AGGREGATE 聚合</a></div>
+                <div class="function-card"><a href="demo-sumproduct.html">SUMPRODUCT 乘积和</a></div>
+                <div class="function-card"><a href="demo-rank.html">RANK 排名</a></div>
+                <div class="function-card"><a href="demo-large.html">LARGE 第 N 大</a></div>
+                <div class="function-card"><a href="demo-small.html">SMALL 第 N 小</a></div>
+                <div class="function-card"><a href="demo-percentile.html">PERCENTILE 百分位</a></div>
+                <div class="function-card"><a href="demo-quartile.html">QUARTILE 四分位</a></div>
+                <div class="function-card"><a href="demo-stdev.html">STDEV 标准差</a></div>
+                <div class="function-card"><a href="demo-var.html">VAR 方差</a></div>
+                <div class="function-card"><a href="demo-median.html">MEDIAN 中位数</a></div>
+                <div class="function-card"><a href="demo-mode.html">MODE 众数</a></div>
+                <div class="function-card"><a href="demo-left-right.html">LEFT/RIGHT 左右</a></div>
+                <div class="function-card"><a href="demo-mid.html">MID 中间</a></div>
+                <div class="function-card"><a href="demo-len.html">LEN 长度</a></div>
+                <div class="function-card"><a href="demo-upper.html">UPPER 大写</a></div>
+                <div class="function-card"><a href="demo-lower.html">LOWER 小写</a></div>
+                <div class="function-card"><a href="demo-proper.html">PROPER 首字母</a></div>
+                <div class="function-card"><a href="demo-clean.html">CLEAN 清理</a></div>
+                <div class="function-card"><a href="demo-code.html">CODE 字符码</a></div>
+                <div class="function-card"><a href="demo-char.html">CHAR 字符</a></div>
+                <div class="function-card"><a href="demo-rept.html">REPT 重复</a></div>
+                <div class="function-card"><a href="demo-exact.html">EXACT 精确比较</a></div>
+                <div class="function-card"><a href="demo-search.html">SEARCH 查找</a></div>
+                <div class="function-card"><a href="demo-value.html">VALUE 转数字</a></div>
+                <div class="function-card"><a href="demo-text-join.html">TEXTJOIN 连接</a></div>
+                <div class="function-card"><a href="demo-concatenate.html">CONCATENATE 连接</a></div>
+                <div class="function-card"><a href="demo-dollar.html">DOLLAR 美元</a></div>
+                <div class="function-card"><a href="demo-fixed.html">FIXED 固定</a></div>
+                <div class="function-card"><a href="demo-numbervalue.html">NUMBERVALUE 数值</a></div>
+                <div class="function-card"><a href="demo-roundup.html">ROUNDUP 向上</a></div>
+                <div class="function-card"><a href="demo-rounddown.html">ROUNDDOWN 向下</a></div>
+                <div class="function-card"><a href="demo-ceiling.html">CEILING 向上舍入</a></div>
+                <div class="function-card"><a href="demo-floor.html">FLOOR 向下舍入</a></div>
+                <div class="function-card"><a href="demo-even.html">EVEN 偶数</a></div>
+                <div class="function-card"><a href="demo-odd.html">ODD 奇数</a></div>
+                <div class="function-card"><a href="demo-product.html">PRODUCT 乘积</a></div>
+                <div class="function-card"><a href="demo-quotient.html">QUOTIENT 商</a></div>
+                <div class="function-card"><a href="demo-power.html">POWER 幂</a></div>
+                <div class="function-card"><a href="demo-sqrt.html">SQRT 平方根</a></div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px; padding: 20px; background: white; border-radius: 12px;">
+            <p style="color: #666;">✅ 120 个函数演示全部完成 | 📱 手机/微信完美适配</p>
+            <p style="color: #999; margin-top: 10px;">更新日期：2026-03-18</p>
+        </div>
+    </div>
+</body>
+</html>
